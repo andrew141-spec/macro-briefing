@@ -538,6 +538,35 @@ with st.sidebar:
         options=["Auto-detect", "Morning", "Midday", "Closing"],
         label_visibility="collapsed"
     )
+
+    if st.button("Test Connectivity", use_container_width=True):
+        import requests as _req
+        gemini_key = st.secrets.get("GEMINI_API_KEY", "")
+        groq_key   = st.secrets.get("GROQ_API_KEY", "")
+
+        st.write("**Keys found:**")
+        st.write(f"- Gemini: {'✅ set' if gemini_key else '❌ missing'}")
+        st.write(f"- Groq: {'✅ set' if groq_key else '❌ missing'}")
+
+        st.write("**Network test:**")
+        try:
+            r = _req.get("https://httpbin.org/get", timeout=5)
+            st.write(f"- Basic internet: ✅ {r.status_code}")
+        except Exception as e:
+            st.write(f"- Basic internet: ❌ {e}")
+
+        try:
+            r = _req.get("https://generativelanguage.googleapis.com", timeout=5)
+            st.write(f"- Gemini endpoint: ✅ reachable")
+        except Exception as e:
+            st.write(f"- Gemini endpoint: ❌ {e}")
+
+        try:
+            r = _req.get("https://api.groq.com", timeout=5)
+            st.write(f"- Groq endpoint: ✅ reachable")
+        except Exception as e:
+            st.write(f"- Groq endpoint: ❌ {e}")
+
     if st.button("Generate Now", use_container_width=True):
         override = None if session_choice == "Auto-detect" else session_choice
         run_generation(session_override=override)
