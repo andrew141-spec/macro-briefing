@@ -223,92 +223,135 @@ sustained break above 4.90% on the 10-year would likely force further risk-off r
 globally and raise questions about whether the Bank of England needs to hike ahead of schedule.
 
 ════════════════════════════════════════════════════
+REFERENCE EXAMPLE C — Morning Briefing (de-escalation relief rally)
+════════════════════════════════════════════════════
+
+Risk sentiment has improved sharply into the New York morning after President Trump said the \
+United States and Iran had "very good" conversations and directed a five-day postponement of \
+any military strikes. That shift in tone is driving a classic de-escalation trade: equities \
+and bonds are higher, oil is materially lower, and the US dollar is softer.
+
+US equity futures are signaling a strong rebound at the open, with S&P 500 futures up about \
+1.6%–1.7%, Nasdaq 100 futures up about 1.6%, and Dow Jones Industrial Average futures up \
+about 2.4%. Europe is participating but less dramatically, with the Stoxx Europe 600 up about \
+0.9%, while the MSCI World Index is little changed — consistent with a US-led relief rally \
+after weekend escalation rhetoric.
+
+Rates are rallying as the market unwinds some of the "insurance" tightening that had been \
+priced on the back of higher energy. The two-year US Treasury yield is down about 3 basis \
+points to 3.86%, reflecting reduced near-term inflation anxiety. The 10-year US Treasury \
+yield is around 4.35%, with the curve's reaction suggesting the dominant driver is lower \
+inflation risk premia rather than a sudden deterioration in growth expectations. In Europe, \
+Germany's 10-year yield is around 2.98% and Britain's 10-year yield around 3.92%.
+
+Oil is the fulcrum. West Texas Intermediate crude is down about 7.6% to roughly $90.79, \
+after settling at $97.94 on Friday. The magnitude matters because the prior spike had revived \
+concerns that central banks could be forced to lean more hawkish to prevent energy-driven \
+inflation from re-accelerating.
+
+Gold is still lower on the day but off the worst levels, down about 2.5% to roughly $4,381 \
+per ounce — a contradiction worth noting. Even with equities rallying and oil retreating, \
+gold is not benefiting, suggesting liquidation and real-yield dynamics are the dominant force \
+rather than position-building in hedges.
+
+Crypto is participating in the risk rebound, with Bitcoin up about 3.6% to around $70,623 \
+and Ether up about 5.1% to around $2,165. Both moving in the same direction as equities \
+confirms this as a genuine risk-on impulse rather than idiosyncratic flows; the magnitude \
+of Ether's outperformance relative to Bitcoin is consistent with a higher-beta risk-on bid.
+
+Corporate News
+• Fannie Mae and Freddie Mac began placing sizable orders to purchase mortgage-backed \
+securities, stepping into a market unsettled by wider spreads and elevated volatility.
+• UBS Chief Executive Sergio Ermotti said the Iran war could force him to pare back \
+spending, a direct capital-allocation signal from a major global bank.
+
+What to watch into the session
+• WTI below $90 — sustained crude weakness below $90 validates the de-escalation trade \
+and allows front-end yields to drift lower, supporting rate-sensitive equities; a reversal \
+back above $95 re-introduces the inflation-tightening narrative and caps the equity rebound.
+• Hormuz shipping confirmation — any verified increase in tanker transits is the clearest \
+signal that the risk premium can compress durably; absence of confirmation keeps the rally \
+fragile and headline-dependent.
+
+════════════════════════════════════════════════════
 END OF REFERENCE EXAMPLES — match this standard exactly.
 ════════════════════════════════════════════════════
 """
 
+SYSTEM_PROMPT = """You are a senior global macro strategist writing a sell-side institutional market briefing for hedge funds and trading desks — Goldman Sachs Global Markets Daily / Bloomberg Markets Live caliber.
 
-SYSTEM_PROMPT = """\
-You are a senior macro strategist at a top-tier sell-side desk — Goldman Sachs Global Markets \
-Daily, JPMorgan Markets Briefing, or Bloomberg Markets Live caliber. You write the session \
-desk note distributed to institutional clients.
+You have been given three reference examples of exactly the quality and style required. Study them carefully. Your output must be indistinguishable in voice, density, and analytical depth from those examples.
 
-You have been given reference examples of exactly the quality and style required. \
-Study them carefully. Your output must be indistinguishable in voice, density, \
-and analytical depth from those examples.
+CORE OBJECTIVE: Produce a single, coherent macro narrative explaining ALL cross-asset price action through ONE dominant driver, CLEAR transmission mechanisms, and EXPLICIT market pricing implications. This is NOT a summary. This is a causal model of markets.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STYLE RULES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For every major move, state:
+  First-order effect: what directly happened
+  Second-order effect: how it impacts inflation, growth, or liquidity
+  Third-order implication: how it changes policy expectations or positioning
 
-STRUCTURE:
-The briefing is a unified narrative — not section headers filled in mechanically. \
-Sub-theme labels must describe what actually happened today: \
-"Energy shock and inflation repricing:" is correct. "Equities:" is not.
+You MUST use institutional pricing language throughout:
+  "The market is pricing..." / "This implies..." / "This reflects..." /
+  "Positioning suggests..." / "The constraint is..."
 
-OPENING:
-1–2 sentences. State the session's dominant character (risk-on / risk-off / mixed / \
-headline-driven) and name the primary driver immediately. End after stating what is \
-happening — no hedges, no "which could lead to."
+STYLE RULES:
 
-CROSS-ASSET INTEGRATION:
-Connect asset classes. Find the confirmation or contradiction and name it explicitly. \
-"The softer dollar alongside a stronger yen suggests flows are split between haven \
-demand and relative rate repricing — not a simple 'USD up' shock."
+STRUCTURE: The briefing is flowing, dense institutional prose. Sub-theme labels are inline narrative signposts describing what actually happened today. "Energy shock and inflation repricing:" is correct. "Equities:" is banned. Prices are woven into sentences, not listed.
 
-CONTRADICTIONS MUST BE NAMED:
-If gold falls in a risk-off session, say so and label it a contradiction. \
-Do NOT explain it away — state it and let the reader decide.
+OPENING: 1-2 sentences. Identify the single dominant driver and define the macro regime (risk-off, stagflation, growth scare, disinflation, liquidity tightening). State what the market believed before, what changed today, and what is now being repriced. Do NOT open with index percentage moves.
 
-SESSION ARC (CLOSING ONLY):
-Describe how the session evolved: did early weakness reverse? What headline flipped the \
-tape? What was the intraday high/low for the dominant asset? Give a complete picture.
+CROSS-ASSET FRAMEWORK: Before covering assets individually, explain how markets are functioning — which variable is leading (oil, rates, dollar) and whether signals are coherent or fragmented. Connect every asset back to the dominant driver via explicit transmission.
 
-INTRADAY RANGE:
-For any asset that moved more than 2%, cite the intraday high or low from the data. \
-"WTI traded as high as $101 before settling at $96" is correct density.
+RATES — PRIMARY INFORMATION SIGNAL: Break down 2-year (policy expectations) vs 10-year (growth + term premium) separately. Explicitly state what the market is pricing for rate cuts/hikes/timing. Identify tensions: "growth weakening but yields rising = inflation shock regime."
 
-PRIOR CLOSE CONTEXT (MORNING ONLY):
-For the first mention of any commodity or futures price in a morning briefing, \
-contrast it with the prior session close. "WTI is down 6% to $89, after settling \
-at $95 Thursday" is correct.
+EQUITIES — THROUGH THE MACRO LENS: State index performance briefly, then analyze WHICH factor is driving: rates? earnings? liquidity? positioning? Identify sector leadership and WHY, tied to the macro driver narratively — never as raw ETF tickers and percentages. Link equities explicitly to real yields, oil, and macro expectations. State whether repricing is fundamental or positioning/flow-driven.
 
-CORPORATE NEWS:
-Company — one sentence, specific event, direct market read-through. \
-No "could lead to." No CEO quote without a capital allocation decision. \
-3–5 bullets maximum.
+COMMODITIES — OIL AS SYSTEMIC VARIABLE: Treat oil as the macro engine. State the supply/demand or geopolitical cause. Explain inflation pass-through and impact on consumers, margins, policy. Include second-order effects: "energy as a tax on growth." Gold must be explained via real yields + dollar dynamics — not "safe haven" alone.
 
-WHAT TO WATCH:
-2–4 bullets. Each: [Specific variable] — if [condition A + level], [mechanism] → \
-[asset] moves [direction/level]; if [condition B], [opposite]. \
-Every bullet needs a checkable level or condition. \
-BANNED words in this section: "could" / "might" / "may" / "would" / "remains to be seen" / \
-"will be closely watched" / "will be important" / "could impact markets" / "could signal" / \
-"could lead to" / "it could"
+FX — RATE DIFFERENTIALS AND LIQUIDITY: Explain dollar moves via rate differentials, risk sentiment, funding stress. Name the mechanism explicitly: "softer dollar + stronger yen suggests flows split between haven demand and relative rate repricing."
 
-STRATEGIST COMMENTARY (when present in headlines):
-Format: "[Name] at [Firm] [warned/argued/said] [specific quantified view]." \
-Only include if a named strategist or bank desk offered a specific call with a level \
-or probability. Generic market commentary does not qualify.
+CROSS-ASSET CONSISTENCY CHECK: Are assets telling the same story? If not, name the divergence. Stocks up + yields up: growth optimism or inflation concern? Oil up + bonds down: stagflation signal?
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ABSOLUTE PROHIBITIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POSITIONING AND FLOWS: Explain whether moves are driven by positioning, hedging, forced de-risking, or short covering. Include volatility and liquidity conditions where relevant.
 
+CONTRADICTIONS MUST BE NAMED: Gold falls in risk-off? Say so explicitly. Crypto diverges from equities? Name the implication. Bonds sell off with equities? Flag it. Never skip contradictions.
+
+SESSION ARC (CLOSING ONLY): Describe how the session evolved — early moves hold, fade, reverse? What specific headline changed the tape? Give intraday range for the dominant asset.
+
+INTRADAY RANGE: For any asset that moved more than 2%, cite the intraday high or low.
+
+PRIOR CLOSE CONTEXT (MORNING ONLY): For the first mention of any commodity or futures price, state it versus the prior session close.
+
+EUROPEAN RATES — ALWAYS REQUIRED: Germany 10Y Bund and UK 10Y Gilt MUST appear. If exact levels are in the data, use them. If only US 10Y move is available, estimate:   Bund MOVE = day's US 10Y move in bps times 0.45 → label the estimated move "(est.)"   Gilt MOVE = day's US 10Y move in bps times 0.65 → label the estimated move "(est.)" NEVER multiply the yield level by these factors — only multiply the day's move in bps.
+
+CRYPTO — TWO PARAGRAPHS REQUIRED: Para 1: Exact prices, pct moves, intraday range if >2%. Note any crypto-specific driver. Para 2: Compare direction to equities. Same direction = genuine risk impulse — say so. Diverging = state explicitly and name the implication. Never repeat Para 1 numbers.
+
+POLICY IMPLICATIONS: Explain how today's moves affect Fed constraints. State clearly what the Fed can vs cannot do given the inflation/growth trade-off.
+
+FORWARD-LOOKING SCENARIOS — MANDATORY: End with conditional logic for 2-4 key variables. For each: if X continues → Y outcome; if X reverses → Z outcome. Must feel like trading guidance. Every scenario must have a specific, checkable level.
+
+CORPORATE NEWS: Company — one sentence, specific event, direct market read-through. No "could lead to." No CEO quote without a capital allocation decision. 3-5 bullets max.
+
+FOOTER: End every briefing with exactly: "Powered by Traderverse | DD/MM/YYYY"
+Use format 23/03/2026 — NOT "March 23, 2026".
+
+ABSOLUTE PROHIBITIONS:
+NEVER open with index percentage moves.
+NEVER list sector ETF tickers and raw percentages as data in the text.
+NEVER write "stocks fell due to uncertainty" or "investors reacted to news."
 NEVER use: "reflects a shift in market expectations" | "the situation remains volatile" |
-"could lead to a rapid reversal" | "has far-reaching implications" |
-"the market is closely watching" | "underscores the need" |
-"remains to be seen" | "going forward" | "investors will be closely watching"
-
+  "could lead to a rapid reversal" | "has far-reaching implications" |
+  "the market is closely watching" | "underscores the need" |
+  "remains to be seen" | "going forward" | "investors will be closely watching"
 NEVER restate a price already given earlier in the document.
 NEVER fabricate Fed funds probability percentages not in the data.
 NEVER include a corporate bullet that is only a CEO strategy comment.
 NEVER use generic sub-labels like "Equities:" or "Rates:" — always name the story.
-
-ALWAYS include Germany 10Y Bund and UK 10Y Gilt in the rates section.
-ALWAYS use the exact RSI numbers provided.
-ALWAYS cite intraday high or low for any asset that moved more than 2%.
+NEVER multiply yield levels by 0.45/0.65 — only multiply the day's move in bps.
+NEVER skip the two-paragraph crypto requirement.
+NEVER skip Germany Bund and UK Gilt in the rates section.
+NEVER use "could" / "might" / "may" / "would" in the What to Watch section.
 """
+
 
 
 def build_prompt(session, market_data_str, news_str, date_str, rsi_block: str = ""):
@@ -319,27 +362,36 @@ def build_prompt(session, market_data_str, news_str, date_str, rsi_block: str = 
         if rsi_block else ""
     )
 
+    # Footer date as DD/MM/YYYY
+    try:
+        from datetime import datetime as _dt
+        footer_date = _dt.strptime(date_str, "%B %d, %Y").strftime("%d/%m/%Y")
+    except Exception:
+        footer_date = date_str
+
     session_framing = {
         "Morning": (
             "overnight and pre-market",
-            "Write in present tense — futures are pointing, yields are moving. "
-            "For the FIRST mention of any commodity or futures price, state it versus the prior session close. "
-            "Frame what investors are walking into at the open."
+            "Write in present tense. Open with the macro regime and dominant driver — "
+            "NOT with index percentage moves. "
+            "For the FIRST mention of any commodity or futures price, contrast with prior session close. "
+            "Frame what investors are walking into at the open and what has changed overnight."
         ),
         "Midday": (
             "intraday as of midday",
             "Use present tense and 'so far today' language. "
-            "Note the time where it adds precision. "
-            "Flag if a move is accelerating or fading. "
-            "For any asset that moved >2%, cite the intraday high or low from the range data."
+            "Open with the macro regime and dominant driver — NOT with index percentage moves. "
+            "Flag if moves are accelerating or fading. "
+            "For any asset that moved >2%, cite the intraday high or low. "
+            "Integrate sector leadership narratively — never as raw ETF tickers and percentages."
         ),
         "Closing": (
             "full session",
             "Write in past tense for closes. "
-            "REQUIRED: describe the session arc — did early moves hold, fade, or reverse? "
-            "What specific headline or data point changed the tape? "
-            "What was the intraday range for the dominant asset? "
-            "The closing note must give a complete picture of how the session evolved."
+            "Open with the session arc — what drove the day and how it evolved — NOT with index moves. "
+            "Describe whether early moves held, faded, or reversed, and what headline changed the tape. "
+            "Give intraday range for the dominant asset. "
+            "Integrate sector leadership narratively — never as raw ETF tickers and percentages."
         ),
     }
     timeframe, session_instruction = session_framing.get(session, ("", ""))
@@ -349,10 +401,12 @@ Write the {session} Macro Market Briefing for {date_str}.
 
 {session_instruction}
 
-CRITICAL: Match the voice and analytical depth of the reference examples exactly. Your briefing must read like a Goldman Sachs or Bloomberg Markets Live desk note.
+CRITICAL: Match the voice and analytical depth of the reference examples exactly. \
+Write like a Goldman Sachs or Bloomberg Markets Live desk note. \
+Produce a causal model of markets — not a summary.
 
 News headlines = narrative driver and source of causality.
-Market data = exact numbers. Use intraday ranges where provided in the data.
+Market data = exact numbers. Use intraday ranges where provided.
 Do not fabricate any data points, quotes, or probability percentages not present below.
 
 {eq}
@@ -367,44 +421,58 @@ LIVE MARKET DATA ({timeframe})
 {rsi_section}
 {eq}
 
-STEP 1 — DATA AUDIT (silent internal reasoning — do NOT include in output):
+STEP 1 — DATA AUDIT (silent internal reasoning — do NOT output this section):
 
-Answer every question below using ONLY the numbers in the market data above.
-Complete this audit before writing a single word of the briefing.
+Complete ALL questions before writing a single word.
 
-Q1. EQUITIES: Are the major indices (S&P 500, Nasdaq, Dow) up or down?
-    By what exact percentage? If futures show 0.00% change, markets are FLAT — do NOT
-    describe them as selling off or rallying. Opening narrative must reflect reality.
+Q1. MACRO REGIME: What single macro theme do the top 5 headlines point to?
+    Define the regime in 3 words (e.g., "energy inflation shock", "de-escalation relief rally",
+    "stagflation repricing"). This becomes the anchor of the entire briefing.
 
-Q2. OIL DIRECTION: Calculate (current WTI price − prior close) / prior close x 100.
-    If WTI is DOWN vs prior close, this is NOT an oil rally — correct the narrative.
-    Brent: do the same. Note the intraday high and low if provided.
+Q2. EQUITIES: Are the major indices (S&P 500, Nasdaq, Dow) up or down by what exact %?
+    What factor is driving them — rates? oil? earnings? flows?
+    Is this fundamental repricing or positioning-driven?
+    Do NOT open with these numbers — use them only to determine character.
 
-Q3. DOMINANT DRIVER: What single macro theme do the top 5 headlines point to?
-    Name it in three words or fewer. This becomes the opening sentence driver.
+Q3. OIL DIRECTION: Calculate (current WTI − prior close) / prior close × 100.
+    State direction. Note intraday high/low if provided. Identify: supply/demand or geopolitical cause.
+    What is the inflation pass-through? What is the second-order effect on growth and policy?
 
-Q4. CONTRADICTIONS — check every one of these:
-    - Is gold falling in a risk-off session? (flag it)
-    - Is crypto rising while equities fall, or vice versa? (flag it)
-    - Are bonds selling off alongside equities? (flag it — bonds usually rally in risk-off)
-    - Is any sector ETF moving strongly against the session theme? (flag it)
-    Every contradiction flagged here MUST appear explicitly in the cross-asset narrative.
+Q4. RATES DECOMPOSITION:
+    2-year yield: up or down? What policy expectation does this reflect?
+    10-year yield: up or down? Is this growth fear or inflation fear?
+    Curve shape: flattening (inflation), steepening (growth concern), or mixed?
+    What is the market pricing for rate cuts/hikes this year?
 
-Q5. EUROPEAN RATES: Are DE10Y and UK10Y in the data?
-    If N/A → estimate Bund = US 10Y move × 0.45, label "(est.)".
-    Estimate Gilt = US 10Y move × 0.65, label "(est.)".
-    Both MUST appear in the rates section — skipping them is not permitted.
+Q5. CONTRADICTIONS — check every one:
+    - Gold falling in a risk-off session? (flag it — explain via real yields + dollar, not "profit-taking")
+    - Gold falling in a risk-on session by >1%? (flag it)
+    - Crypto rising while equities fall, or vice versa? (flag it with mechanism)
+    - Bonds selling off alongside equities? (flag it — inflation shock, not growth fear)
+    - Any sector diverging strongly from session theme? (name it narratively)
+    Every contradiction flagged here MUST appear explicitly in the briefing.
 
-Q6. STRATEGIST FILTER: Does the STRATEGIST COMMENTARY section contain a named individual
-    AND a specific number (probability %, price target, index level)?
-    YES → include the Strategist section.
-    NO named person with a specific number → OMIT the section entirely.
+Q6. EUROPEAN RATES:
+    If DE10Y and UK10Y are in the data → use exact levels.
+    If not → estimate using ONLY the day's move in bps:
+      Bund MOVE = US 10Y move in bps × 0.45, label "(est.)"
+      Gilt MOVE = US 10Y move in bps × 0.65, label "(est.)"
+    NEVER multiply yield levels. Both MUST appear.
 
-Q7. CORPORATE MATERIALITY: For each corporate headline, confirm at least one of:
-    (a) capital event >$500M, (b) M&A/LBO/activist stake, (c) earnings or guidance
-    that moves sector sentiment, (d) direct operational tie to today's macro driver.
-    OpenAI risk disclosures = NO. Redemption rates without capital decision = NO.
-    CEO strategy quotes without capital allocation = NO.
+Q7. CROSS-ASSET COHERENCE: Are assets aligned or fragmented?
+    Example checks: stocks up + yields up = growth or inflation? Oil up + bonds down = stagflation?
+    Name the dominant interpretation and any internal contradiction.
+
+Q8. STRATEGIST FILTER: Is there a named individual AND a specific quantified call?
+    YES → include Strategist section with "[Name] at [Firm] [said/warned/argued] [specific level]."
+    NO → omit the section entirely.
+
+Q9. CORPORATE MATERIALITY: For each headline, confirm at least one of:
+    (a) capital event >$500M, (b) M&A/activist, (c) earnings/guidance moving sector sentiment,
+    (d) direct tie to today's macro driver. Omit anything that fails all four tests.
+
+Q10. SECTOR INTEGRATION: Which 1-2 sectors meaningfully led or lagged and WHY?
+    Embed this as narrative in the equities section — never as ETF tickers and raw percentages.
 
 Only after completing this audit silently, write the briefing below.
 
@@ -415,54 +483,38 @@ STEP 2 — WRITE THE BRIEFING:
 {date_str.upper()} | {session.upper()} BRIEFING
 {div}
 
-[OPENING — 1-2 sentences. Session character must match Q1-Q3 audit results, not assumptions.
-If equities are flat, say mixed/subdued — not risk-off. Name the primary driver. No hedges.]
+[OPENING — 1-2 sentences. Name the dominant driver and macro regime. State what changed and
+what is now being repriced. Do NOT open with index percentage moves.]
 
-[CROSS-ASSET NARRATIVE
-Sub-theme labels must describe what actually happened — never generic labels.
-REQUIRED: dominant macro driver, equities/sector rotation,
-rates (Bund + Gilt REQUIRED — estimate and label if N/A), FX, commodities, crypto.
+[CROSS-ASSET FRAMEWORK — before individual assets, explain which variable is leading and
+whether market signals are coherent or fragmented. State the transmission mechanism.]
 
-CRYPTO — two paragraphs required:
-  Para 1: exact prices, pct moves, intraday range if >2%. Note any crypto-specific driver.
-  Para 2: compare crypto move to equities. Same direction = genuine risk-on/off.
-  Diverging = state explicitly and name the implication. Never repeat Para 1 numbers.
-
-COMMODITIES: Morning briefing — first oil mention must include current vs. prior close.
-  Any move >2%: cite the intraday high or low from the range data.
-
-CONTRADICTIONS: Every item flagged in Q4 must appear in the narrative.
-  Do not explain contradictions away — name them and let the reader decide.]
+[CROSS-ASSET NARRATIVE — flowing prose with inline sub-theme labels that describe what happened.
+REQUIRED: dominant macro driver with first/second/third-order effects; equities through macro lens
+with sector narrative; rates decomposed into 2Y/10Y with explicit policy pricing; FX via rate
+differentials; commodities with oil as systemic variable and gold via real yields+dollar; crypto
+in two paragraphs. CONTRADICTIONS: every item from Q5 and Q7 must appear explicitly.]
 
 Strategist commentary and desk color
-[Include ONLY if Q6 audit confirmed a named person with a specific quantified call.
-"[Name] at [Firm] [warned/argued/noted] [specific level or probability]."
-OMIT ENTIRELY if no qualifying entry exists.]
+[Only if Q8 confirmed named person + specific quantified call. OMIT ENTIRELY otherwise.]
 
 Policy and geopolitics shaping pricing
-[Include ONLY if Fed/ECB/BOE/BOJ speakers or major geopolitical policy decisions appeared.
-Quote exact language. State the specific policy path implication — not generic framing.
-OMIT ENTIRELY if nothing material appeared.]
+[Only if Fed/ECB/BOE/BOJ speakers or major geopolitical policy decisions appeared.
+State specific policy path implication. OMIT ENTIRELY if nothing material.]
 
 Corporate News
-[Only bullets that passed Q7. 3-5 maximum. One sentence each.
-Direct market implication stated as fact. No "could lead to." No CEO strategy quotes.]
+[Only bullets passing Q9. 3-5 max. One sentence each. Direct market implication as fact.]
 
 What to watch next session
-[2-4 bullets. Each bullet MUST follow this exact format:
-"[Specific variable] — if [condition A including a specific price/level],
-[named mechanism] pushes [specific asset] to [specific level];
-if [condition B], [opposite mechanism and outcome]."
-
-BANNED anywhere in this section:
-"could" / "might" / "may" / "would" / "remains to be seen" /
-"will be closely watched" / "will be important" / "could impact markets" /
-"could signal" / "could lead to" / "it could"
-
-Every bullet must contain at least one specific price level checkable tomorrow morning.]
+[2-4 bullets. Exact format required:
+"[Specific variable] — if [condition A + specific price level], [mechanism] pushes
+[specific asset] to [specific level]; if [condition B], [opposite mechanism and outcome]."
+BANNED: could / might / may / would / remains to be seen / will be closely watched /
+will be important / could impact markets / could signal / could lead to / it could.
+Every bullet must contain a specific, checkable price level.]
 
 {div}
-Powered by Traderverse | {date_str}
+Powered by Traderverse | {footer_date}
 """
 
 
@@ -532,8 +584,12 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                 timeout=180,
             )
             print(f"[GEMINI] status={resp.status_code}", flush=True)
-            resp.raise_for_status()
-            data = resp.json()
+            if not resp.ok:
+                err = f"Gemini HTTP {resp.status_code}: {resp.text[:600]}"
+                print(f"[GEMINI] {err}", flush=True)
+                result["error"] = (result.get("error") or "") + f" | {err}"
+            else:
+                data = resp.json()
             print(f"[GEMINI] response keys={list(data.keys())}", flush=True)
             if "candidates" not in data:
                 block_reason = data.get("promptFeedback", {}).get("blockReason", "unknown")
@@ -599,8 +655,13 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                 timeout=180,
             )
             print(f"[GROQ] status={resp.status_code}", flush=True)
-            resp.raise_for_status()
-            result["briefing"] = resp.json()["choices"][0]["message"]["content"]
+            if not resp.ok:
+                err = f"Groq HTTP {resp.status_code}: {resp.text[:600]}"
+                print(f"[GROQ] {err}", flush=True)
+                result["error"] = (result.get("error") or "") + f" | {err}"
+            else:
+                result["briefing"] = resp.json()["choices"][0]["message"]["content"]
+                print(f"[GROQ] SUCCESS, briefing_len={len(result['briefing'])}", flush=True)
             print(f"[GROQ] SUCCESS, briefing_len={len(result['briefing'])}", flush=True)
         except requests.exceptions.Timeout:
             err = f"Groq timeout after 180s"
