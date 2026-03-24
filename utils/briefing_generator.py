@@ -506,6 +506,8 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
         + FEW_SHOT_EXAMPLES + "\n\n"
         + build_prompt(session, mkt_str, news_str, date_str, rsi_str)
     )
+    prompt_chars = len(full_prompt)
+    result["prompt_chars"] = prompt_chars
 
     # 4. Call Gemini
     if gemini_api_key:
@@ -524,18 +526,32 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                 f"{GEMINI_API_URL}?key={gemini_api_key}",
                 headers={"Content-Type": "application/json"},
                 json=payload,
-                timeout=90,
+                timeout=180,
             )
             resp.raise_for_status()
             data = resp.json()
-            result["briefing"] = data["candidates"][0]["content"]["parts"][0]["text"]
-            return result
+            # Check for blocked content
+            if "candidates" not in data:
+                block_reason = data.get("promptFeedback", {}).get("blockReason", "unknown")
+                result["error"] = (result.get("error") or "") + f" | Gemini blocked: {block_reason} | full response: {str(data)[:300]}"
+            else:
+                candidate = data["candidates"][0]
+                finish_reason = candidate.get("finishReason", "")
+                if finish_reason == "SAFETY":
+                    result["error"] = (result.get("error") or "") + f" | Gemini safety block"
+                else:
+                    result["briefing"] = candidate["content"]["parts"][0]["text"]
+                    return result
+        except requests.exceptions.Timeout:
+            result["error"] = (result.get("error") or "") + f" | Gemini timeout after 180s (prompt was {prompt_chars} chars)"
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response else "?"
-            body   = e.response.text[:400] if e.response else ""
+            body   = e.response.text[:600] if e.response else "no response body"
             result["error"] = (result.get("error") or "") + f" | Gemini HTTP {status}: {body}"
+        except KeyError as e:
+            result["error"] = (result.get("error") or "") + f" | Gemini parse error (missing key {e}): {str(data)[:300]}"
         except Exception as e:
-            result["error"] = (result.get("error") or "") + f" | Gemini error: {e}"
+            result["error"] = (result.get("error") or "") + f" | Gemini error ({type(e).__name__}): {e}"
 
     # 5. Fallback to Groq if Gemini fails or no key provided
     if groq_api_key:
@@ -557,15 +573,17 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                 GROQ_API_URL,
                 headers={"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"},
                 json=payload,
-                timeout=90,
+                timeout=180,
             )
             resp.raise_for_status()
             result["briefing"] = resp.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.Timeout:
+            result["error"] = (result.get("error") or "") + f" | Groq timeout after 180s"
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response else "?"
-            body   = e.response.text[:400] if e.response else ""
+            body   = e.response.text[:600] if e.response else "no response body"
             result["error"] = (result.get("error") or "") + f" | Groq HTTP {status}: {body}"
         except Exception as e:
-            result["error"] = (result.get("error") or "") + f" | Groq error: {e}"
+            result["error"] = (result.get("error") or "") + f" | Groq error ({type(e).__name__}): {e}"
 
     return result
