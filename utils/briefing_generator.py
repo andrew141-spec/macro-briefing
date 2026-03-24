@@ -386,7 +386,7 @@ Powered by Traderverse | {date_str}
 
 def generate_briefing(groq_api_key, alpha_vantage_key="", session=None, force_session=None):
     now_et   = datetime.now(ET)
-    date_str = now_et.strftime("%B %d, %Y")
+    date_str = now_et.strftime("%B %d, %Y").replace(" 0", " ")  # remove zero-padding
     session  = force_session or session or get_session(now_et)
     gen_at   = now_et.strftime("%Y-%m-%d %H:%M ET")
 
