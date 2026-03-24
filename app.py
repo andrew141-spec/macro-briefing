@@ -33,7 +33,7 @@ st.markdown("""
     --bg-deep:      #000000;
     --bg-panel:     #000000;
     --bg-card:      #000000;
-    --bg-hover:     #16161f;
+    --bg-hover:     #000000;
     --border-dim:   #1c1c2a;
     --border-med:   #252535;
     --border-bright:#333350;
