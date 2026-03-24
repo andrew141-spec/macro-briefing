@@ -308,6 +308,12 @@ Every briefing MUST explicitly state:
 This delta — what changed relative to prior pricing — is the analytical engine of the note.
 Do NOT just describe what happened. Explain the gap between expectation and reality.
 
+This "before vs now" repricing logic MUST appear in EVERY major section, not just the opening:
+  RATES: "Before today, the 2-year implied two cuts. After the CPI print, it is pricing one — the market has removed 25bps of easing in a single session."
+  OIL: "The consensus entering today was that Hormuz would partially reopen within the week. Iran's statement removes that assumption and reprices the supply-disruption tail from a base case to a tail risk."
+  EQUITIES: "The S&P had been trading as if the oil shock was transitory. Today's close below 5,400 is the first signal the market is beginning to price a more durable inflation drag on earnings."
+  FX: "Dollar strength today contradicts the prior week's de-escalation narrative — the move from 99 to 100.5 on DXY prices a hawkish Fed hold, not a cut cycle."
+
 Examples of correct framing:
   "Coming into the session, markets were pricing one Fed cut in 2026. The jobs miss and oil spike together shift that calculus: the front end is now pricing zero cuts, implying the Fed is boxed in by stagflationary dynamics."
   "The overnight WTI spike to $101 forces a reassessment — prior consensus assumed the Strait would reopen within days; today's Iranian statement removes that base case and reprices energy tail risk higher."
@@ -357,7 +363,20 @@ OPENING: 1-2 sentences. Name the dominant driver, define the macro regime, and s
 
 CROSS-ASSET FRAMEWORK: Before individual assets, establish which variable is leading (oil, rates, dollar) and whether market signals are coherent or fragmented. State the transmission mechanism explicitly before drilling into assets.
 
-RATES — PRIMARY INFORMATION SIGNAL: Break down 2-year (policy expectations) vs 10-year (growth + term premium) separately. Explicitly state what the market is pricing for cuts/hikes. Identify the tension: "yields rising alongside weakening growth = the market is in an inflation shock regime, not a growth scare."
+RATES — THE PRIMARY INFORMATION SIGNAL (most important section): Rates are not just a data point — they are the market's real-time verdict on policy, growth, and inflation. Interpret them as such.
+
+REQUIRED structure for the rates section:
+  Step 1 — BEFORE vs AFTER: State explicitly what the market was pricing BEFORE today (e.g., "entering the session, front-end rates implied two cuts in 2026") and what it is pricing NOW after the move.
+  Step 2 — DECOMPOSE 2Y vs 10Y separately:
+    2-year yield: this is pure policy expectations. Up = market is removing cuts or pricing hikes. Down = market is adding cuts. State exactly what it implies: "The 2-year at 3.95% implies the market no longer believes the Fed can cut this year."
+    10-year yield: this is growth expectations PLUS inflation premium PLUS term premium. Identify which is dominant today.
+  Step 3 — REAL YIELDS vs NOMINAL: If real yields are moving, state the direction and what it means for risk assets. Rising real yields = tighter financial conditions, higher discount rate, pressure on equities. Falling real yields = the opposite. Do not skip this.
+  Step 4 — CURVE SHAPE: Name it and interpret it.
+    Bear flattening (front end rises faster) = inflation shock, market pricing Fed tightening.
+    Bull steepening (front end falls faster) = growth fear, market pricing Fed cuts.
+    Bear steepening (long end rises faster) = term premium rising, fiscal or inflation concern.
+    Inversion deepening = recession pricing.
+  Step 5 — THE TENSION: Name the internal contradiction if one exists. "Front-end yields rising while growth data weakens = the market is telling the Fed it cannot cut even if the economy slows — this is a stagflationary constraint, not a standard hiking cycle."
 
 EQUITIES — THROUGH THE MACRO LENS: State index moves briefly, then analyze the DRIVER: rates? earnings? liquidity? flows? Identify sector leadership and WHY — tied to the macro driver as narrative, never as ETF tickers. State whether repricing is fundamental or positioning-driven. Link explicitly to real yields and oil.
 
@@ -365,7 +384,11 @@ COMMODITIES — OIL AS SYSTEMIC VARIABLE: Treat oil as the macro engine, not a c
 
 FX — RATE DIFFERENTIALS AND LIQUIDITY: Explain dollar moves via rate differentials, risk sentiment, funding stress. Name the mechanism: "softer dollar + stronger yen confirms this is a risk-off rotation into haven assets, not a broad dollar debasement trade."
 
-CROSS-ASSET CONSISTENCY: Are assets coherent or fragmented? Name any divergence and state the implication. Stocks up + yields up: is this growth optimism or inflation pricing? Oil up + bonds down: stagflation. Name it.
+CROSS-ASSET CONSISTENCY SENTENCE — MANDATORY: Every briefing MUST contain one explicit sentence that ties all asset classes together into a single verdict. This sentence appears at the end of the cross-asset narrative, before the strategist section. It must follow this exact logic:
+  "The fact that [asset A] is doing X while [asset B] is doing Y — and [asset C] is doing Z — confirms this is a [regime name] session, not a [alternative regime]."
+  OR, if signals are fragmented:
+  "The divergence between [asset A] rallying and [asset B] selling off is internally inconsistent with a pure [regime] read — the market is simultaneously pricing [X] and [Y], a tension that resolves if [condition]."
+This is the analytical verdict of the entire note. It must be decisive, specific, and name the regime.
 
 CONTRADICTIONS MUST BE NAMED AND EXPLAINED MECHANISTICALLY: Gold falls in risk-off? Explain via stronger dollar and higher real yields overriding haven demand — do not call it "profit-taking." Bonds sell off with equities? This confirms inflation shock, not growth fear. Crypto diverges? Name the flow mechanism. Never skip a contradiction.
 
@@ -490,11 +513,20 @@ Q4. OIL: Calculate direction and magnitude vs prior close. Note intraday range.
     Run the full chain: cause → inflation pass-through → consumer/margin impact → policy constraint.
     What second-order growth drag does this create?
 
-Q5. RATES DECOMPOSITION:
-    2-year: direction → what policy expectation does this price?
-    10-year: direction → growth fear or inflation fear?
-    Curve shape: flattening = inflation shock. Steepening = growth concern. Name it.
-    What rate cuts/hikes is the market now pricing vs before today?
+Q5. RATES — FULL DECOMPOSITION (most important section):
+    BEFORE vs NOW: What was the market pricing for Fed cuts/hikes before today?
+    What is it pricing NOW after today's moves? State the exact bps shift.
+    2-year yield: direction and magnitude → what policy expectation does this price?
+      "The 2-year at X% implies the market [is/is not] pricing a cut at the next meeting."
+    10-year yield: direction → is this growth fear (falling) or inflation fear (rising)?
+      What is driving it — real yields, inflation expectations, or term premium?
+    Real yields: direction? Rising real yields = tighter financial conditions = pressure on equities.
+    Curve shape — name it:
+      Bear flattening (front rises faster) = inflation shock, Fed tightening priced.
+      Bull steepening (front falls faster) = growth fear, cuts priced.
+      Bear steepening (long rises faster) = term premium, fiscal or inflation concern.
+    THE TENSION: Is there an internal contradiction? "Yields rising + growth weakening = stagflation
+    constraint — the Fed cannot cut even if the economy slows." State this explicitly.
 
 Q6. POSITIONING AND FLOWS:
     Is today's move driven by: forced de-risking? short covering? fundamental repositioning?
@@ -545,13 +577,21 @@ signals are coherent or fragmented, and run the top-level transmission chain:
 event → inflation/growth → policy → asset repricing.]
 
 [CROSS-ASSET NARRATIVE — flowing prose with descriptive inline sub-labels.
-REQUIRED in order: dominant macro driver with full causal chain; equities through macro lens
-with positioning context; rates with 2Y/10Y decomposition and explicit policy pricing;
-FX via rate differentials; commodities with oil as systemic variable and gold via real yields+dollar;
-crypto in two paragraphs (prices+moves | comparison to equities with mechanism).
-POSITIONING: for each major move, state whether it is forced de-risking, short covering,
-fundamental repricing, or mechanical flow — and what this implies for durability.
-CONTRADICTIONS: every item from Q7 and Q9 must appear explicitly with mechanistic explanation.]
+REQUIRED in order: dominant macro driver with full causal chain including before/now pricing delta;
+equities through macro lens with positioning context; rates with full 5-step decomposition
+(before/now policy pricing, 2Y vs 10Y, real yields, curve shape, tension); FX via rate
+differentials with before/now repricing stated; commodities with oil as systemic variable
+and gold via real yields+dollar; crypto in two paragraphs (prices+moves | comparison to equities).
+POSITIONING: for each major move, name the type (forced de-risking / short covering /
+fundamental / mechanical) and state what it implies for durability.
+CONTRADICTIONS: every item from Q7 and Q9 must appear with mechanistic explanation.
+
+CROSS-ASSET CONSISTENCY SENTENCE — REQUIRED at the end of this section:
+One sentence that delivers the analytical verdict of the entire note:
+"The fact that [asset A] is doing X while [asset B] is doing Y — and [asset C] is doing Z —
+confirms this is a [regime] session, not a [alternative regime]."
+OR if fragmented: "The divergence between [A] and [B] is internally inconsistent with a pure
+[regime] read — the market is simultaneously pricing [X] and [Y], a tension that resolves if [condition]."]
 
 Strategist commentary and desk color
 [Only if Q10 confirmed: "[Name] at [Firm] [warned/argued/said] [specific quantified call]."
