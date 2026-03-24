@@ -470,15 +470,18 @@ def render_ticker_strip(market_data_raw: dict):
 
 
 def run_generation(session_override: str = None):
-    groq_key = st.secrets.get("GROQ_API_KEY", "")
-    av_key   = st.secrets.get("ALPHA_VANTAGE_KEY", "")
+    gemini_key = st.secrets.get("GEMINI_API_KEY", "")
+    groq_key   = st.secrets.get("GROQ_API_KEY", "")
+    av_key     = st.secrets.get("ALPHA_VANTAGE_KEY", "")
 
-    if not groq_key:
-        st.error("GROQ_API_KEY not found in Streamlit secrets. Add it in App Settings → Secrets.")
+    if not gemini_key and not groq_key:
+        st.error("No API key found. Add GEMINI_API_KEY (or GROQ_API_KEY as fallback) to Streamlit secrets.")
         return
 
-    with st.spinner("Fetching live market data and generating briefing..."):
+    model_label = "Gemini 2.0 Flash" if gemini_key else "Groq (fallback)"
+    with st.spinner(f"Fetching live market data and generating briefing via {model_label}..."):
         result = generate_briefing(
+            gemini_api_key=gemini_key,
             groq_api_key=groq_key,
             alpha_vantage_key=av_key,
             force_session=session_override,
@@ -490,7 +493,7 @@ def run_generation(session_override: str = None):
         st.session_state["last_generated"] = mark_generated(
             result["session"], st.session_state["last_generated"]
         )
-        st.success(f"Briefing generated — {result['session']} | {result['generated_at']}")
+        st.success(f"Briefing generated via {model_label} — {result['session']} | {result['generated_at']}")
     else:
         st.error(f"Generation failed: {result.get('error', 'Unknown error')}")
 
@@ -542,7 +545,7 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # ── Archive with scrollable full list ──
+    # ── Archive ──
     st.markdown("""<div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;
                     letter-spacing:0.15em;text-transform:uppercase;color:#444460;
                     margin-bottom:0.5rem;">Briefing Archive</div>""", unsafe_allow_html=True)
@@ -560,10 +563,8 @@ with st.sidebar:
                         color:#444460;margin-bottom:0.4rem;">{len(archive)} briefing(s) found</div>""",
                     unsafe_allow_html=True)
 
-        # Show ALL briefings in a scrollable container via selectbox
         labels = [format_archive_label(e) for e in archive]
 
-        # Scrollable list — use selectbox showing all entries (Streamlit handles scroll)
         selected_label = st.selectbox(
             "Select briefing",
             options=labels,
@@ -584,7 +585,6 @@ with st.sidebar:
                 }
                 st.rerun()
 
-        # Also render a visual scrollable list below for quick scan
         st.markdown("""<div style="max-height:320px;overflow-y:auto;margin-top:0.6rem;
                         border:1px solid #1c1c2a;padding:0.4rem;">""", unsafe_allow_html=True)
         for i, entry in enumerate(archive):
