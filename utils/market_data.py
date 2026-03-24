@@ -194,7 +194,16 @@ def format_snapshot_for_prompt(snapshot: dict) -> str:
         p   = d["price"]
         chg = d.get("pct_chg", 0) or 0
         sign = "+" if chg >= 0 else ""
-        return f"{label}: {p:,.4g} ({sign}{chg:.2f}%)"
+        # Format price — avoid scientific notation for large numbers
+        if p >= 10000:
+            p_str = f"{p:,.0f}"
+        elif p >= 100:
+            p_str = f"{p:,.2f}"
+        elif p >= 1:
+            p_str = f"{p:,.4f}"
+        else:
+            p_str = f"{p:.6f}"
+        return f"{label}: {p_str} ({sign}{chg:.2f}%)"
 
     ts  = snapshot.get("_timestamp", "")
     src = snapshot.get("_source", "Yahoo Finance")
