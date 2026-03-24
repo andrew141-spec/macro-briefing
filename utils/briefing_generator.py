@@ -276,6 +276,28 @@ fragile and headline-dependent.
 ════════════════════════════════════════════════════
 END OF REFERENCE EXAMPLES — match this standard exactly.
 ════════════════════════════════════════════════════
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REFERENCE USAGE — STRICT RULE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The reference examples are provided ONLY to demonstrate:
+- tone
+- structure
+- level of analytical depth
+
+They MUST NOT be reused, paraphrased, or imitated directly.
+
+Do NOT:
+- reuse phrases or sentence structures
+- mirror paragraph flow exactly
+- anchor your narrative to the example content
+
+Every output must be written from first principles based on the CURRENT input data.
+
+If any phrasing in your response resembles the reference examples, rewrite it.
+
+Your goal is to match the QUALITY — not the CONTENT or WORDING.
 """
 
 SYSTEM_PROMPT = """You are a senior global macro strategist writing a sell-side institutional market briefing for hedge funds and trading desks — Goldman Sachs Global Markets Daily / Bloomberg Markets Live caliber.
