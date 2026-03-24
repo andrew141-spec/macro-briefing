@@ -348,8 +348,7 @@ Write the {session} Macro Market Briefing for {date_str}.
 
 {session_instruction}
 
-CRITICAL: Match the voice and analytical depth of the reference examples exactly. \
-Your briefing must read like a Goldman Sachs or Bloomberg Markets Live desk note.
+CRITICAL: Match the voice and analytical depth of the reference examples exactly. Your briefing must read like a Goldman Sachs or Bloomberg Markets Live desk note.
 
 News headlines = narrative driver and source of causality.
 Market data = exact numbers. Use intraday ranges where provided in the data.
@@ -367,51 +366,99 @@ LIVE MARKET DATA ({timeframe})
 {rsi_section}
 {eq}
 
-Now write the briefing using EXACTLY this structure:
+STEP 1 — DATA AUDIT (silent internal reasoning — do NOT include in output):
+
+Answer every question below using ONLY the numbers in the market data above.
+Complete this audit before writing a single word of the briefing.
+
+Q1. EQUITIES: Are the major indices (S&P 500, Nasdaq, Dow) up or down?
+    By what exact percentage? If futures show 0.00% change, markets are FLAT — do NOT
+    describe them as selling off or rallying. Opening narrative must reflect reality.
+
+Q2. OIL DIRECTION: Calculate (current WTI price − prior close) / prior close x 100.
+    If WTI is DOWN vs prior close, this is NOT an oil rally — correct the narrative.
+    Brent: do the same. Note the intraday high and low if provided.
+
+Q3. DOMINANT DRIVER: What single macro theme do the top 5 headlines point to?
+    Name it in three words or fewer. This becomes the opening sentence driver.
+
+Q4. CONTRADICTIONS — check every one of these:
+    - Is gold falling in a risk-off session? (flag it)
+    - Is crypto rising while equities fall, or vice versa? (flag it)
+    - Are bonds selling off alongside equities? (flag it — bonds usually rally in risk-off)
+    - Is any sector ETF moving strongly against the session theme? (flag it)
+    Every contradiction flagged here MUST appear explicitly in the cross-asset narrative.
+
+Q5. EUROPEAN RATES: Are DE10Y and UK10Y in the data?
+    If N/A → estimate Bund = US 10Y move × 0.45, label "(est.)".
+    Estimate Gilt = US 10Y move × 0.65, label "(est.)".
+    Both MUST appear in the rates section — skipping them is not permitted.
+
+Q6. STRATEGIST FILTER: Does the STRATEGIST COMMENTARY section contain a named individual
+    AND a specific number (probability %, price target, index level)?
+    YES → include the Strategist section.
+    NO named person with a specific number → OMIT the section entirely.
+
+Q7. CORPORATE MATERIALITY: For each corporate headline, confirm at least one of:
+    (a) capital event >$500M, (b) M&A/LBO/activist stake, (c) earnings or guidance
+    that moves sector sentiment, (d) direct operational tie to today's macro driver.
+    OpenAI risk disclosures = NO. Redemption rates without capital decision = NO.
+    CEO strategy quotes without capital allocation = NO.
+
+Only after completing this audit silently, write the briefing below.
+
+{eq}
+
+STEP 2 — WRITE THE BRIEFING:
 
 {date_str.upper()} | {session.upper()} BRIEFING
 {div}
 
-[OPENING — 1-2 sentences. Session character + primary driver by name. No hedges.]
+[OPENING — 1-2 sentences. Session character must match Q1-Q3 audit results, not assumptions.
+If equities are flat, say mixed/subdued — not risk-off. Name the primary driver. No hedges.]
 
 [CROSS-ASSET NARRATIVE
-Sub-theme labels must be descriptive of what happened — never generic.
-REQUIRED sub-themes: dominant macro driver, equities/sector rotation,
-rates (Bund + Gilt REQUIRED), FX, commodities, crypto.
+Sub-theme labels must describe what actually happened — never generic labels.
+REQUIRED: dominant macro driver, equities/sector rotation,
+rates (Bund + Gilt REQUIRED — estimate and label if N/A), FX, commodities, crypto.
 
-CRYPTO: Two paragraphs.
-  Para 1: exact prices + pct moves + intraday range if >2%. Crypto-specific driver if any.
-  Para 2: compare crypto move to equities. If moving together → genuine risk-on/off.
-  If diverging → state explicitly and explain the implication.
-  Never repeat Para 1 content in Para 2.
+CRYPTO — two paragraphs required:
+  Para 1: exact prices, pct moves, intraday range if >2%. Note any crypto-specific driver.
+  Para 2: compare crypto move to equities. Same direction = genuine risk-on/off.
+  Diverging = state explicitly and name the implication. Never repeat Para 1 numbers.
 
-COMMODITIES: For Morning, state current price vs. prior close for first oil mention.
-  For any move >2%: cite intraday high or low from the range data.
+COMMODITIES: Morning briefing — first oil mention must include current vs. prior close.
+  Any move >2%: cite the intraday high or low from the range data.
 
-CONTRADICTIONS: If any asset moves against the session theme, flag it explicitly.
-  Do NOT explain it away. Name it and let the reader decide.]
+CONTRADICTIONS: Every item flagged in Q4 must appear in the narrative.
+  Do not explain contradictions away — name them and let the reader decide.]
 
 Strategist commentary and desk color
-[INCLUDE ONLY if named strategist or bank desk commentary appeared in the STRATEGIST
-COMMENTARY section of the headlines. Format each entry:
+[Include ONLY if Q6 audit confirmed a named person with a specific quantified call.
 "[Name] at [Firm] [warned/argued/noted] [specific level or probability]."
-If no named commentary with a specific call appeared: OMIT THIS SECTION ENTIRELY.]
+OMIT ENTIRELY if no qualifying entry exists.]
 
 Policy and geopolitics shaping pricing
-[INCLUDE ONLY if Fed/ECB/BOE/BOJ speakers or major geopolitical policy decisions appeared.
-Quote exact language where available. State what it means for the policy path specifically.
-If nothing material appeared: OMIT ENTIRELY.]
+[Include ONLY if Fed/ECB/BOE/BOJ speakers or major geopolitical policy decisions appeared.
+Quote exact language. State the specific policy path implication — not generic framing.
+OMIT ENTIRELY if nothing material appeared.]
 
 Corporate News
-[STRICT FILTER: only stories with (a) capital event >$500M, (b) M&A/LBO/activist,
-(c) earnings/guidance moving sector sentiment, or (d) operational tie to today's macro theme.
-3-5 bullets. One sentence each. Direct market implication stated as fact.]
+[Only bullets that passed Q7. 3-5 maximum. One sentence each.
+Direct market implication stated as fact. No "could lead to." No CEO strategy quotes.]
 
 What to watch next session
-[2-4 bullets. Each: "[Variable] — if [condition A + specific level], [mechanism] → [outcome];
-if [condition B], [opposite]."
-Every bullet must have a specific level or condition checkable tomorrow morning.
-BANNED endings: "will be closely watched" / "will be important" / "could impact markets".]
+[2-4 bullets. Each bullet MUST follow this exact format:
+"[Specific variable] — if [condition A including a specific price/level],
+[named mechanism] pushes [specific asset] to [specific level];
+if [condition B], [opposite mechanism and outcome]."
+
+BANNED anywhere in this section:
+"could" / "might" / "may" / "would" / "remains to be seen" /
+"will be closely watched" / "will be important" / "could impact markets" /
+"could signal" / "could lead to" / "it could"
+
+Every bullet must contain at least one specific price level checkable tomorrow morning.]
 
 {div}
 Powered by Traderverse | {date_str}
