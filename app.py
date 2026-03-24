@@ -8,7 +8,7 @@ from datetime import datetime
 import pytz
 
 st.set_page_config(
-    page_title="Macro Market Briefing",
+    page_title="Market Brief",
     page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
