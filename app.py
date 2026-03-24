@@ -449,11 +449,15 @@ th, td{
 # ─── SESSION STATE ────────────────────────────────────────────────────────────
 def init_state():
     defaults = {
-        "briefings":        [],
-        "current_briefing": None,
-        "last_generated":   {},
-        "api_key_set":      False,
-        "auto_check_done":  False,
+        "briefings":            [],
+        "current_briefing":     None,
+        "last_generated":       {},
+        "api_key_set":          False,
+        # Tracks which session window was active when auto_check last ran.
+        # Stored as "Morning", "Midday", "Closing", or None.
+        # Resets when the active session window changes so the check re-runs,
+        # but should_auto_generate() guards against duplicate generation via archive.
+        "auto_checked_session": None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -689,12 +693,19 @@ with st.sidebar:
 
 
 # ─── AUTO-GENERATION CHECK ────────────────────────────────────────────────────
-if not st.session_state["auto_check_done"]:
-    session_now, now_et = current_session_et()
+# We re-run the check whenever the active session window changes (e.g. Morning → Midday).
+# should_auto_generate() checks the on-disk archive so reloads never cause duplicates.
+session_now, now_et = current_session_et()
+_checked = st.session_state.get("auto_checked_session")
+
+if session_now != _checked:
+    # Session window changed (or first load) — evaluate whether to generate
     if session_now and should_auto_generate(session_now, st.session_state["last_generated"]):
         st.info(f"Auto-generating {session_now} briefing for {now_et.strftime('%B %d, %Y')}...")
         run_generation(session_override=session_now)
-    st.session_state["auto_check_done"] = True
+    # Mark this session window as checked regardless of whether we generated,
+    # so reloads within the same window don't re-evaluate (archive is the real guard).
+    st.session_state["auto_checked_session"] = session_now
 
 
 # ─── MAIN HEADER ──────────────────────────────────────────────────────────────
