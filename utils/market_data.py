@@ -5,7 +5,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 Market Data Fetcher — upgraded with intraday ranges, prior-close context,
 sector ETFs, silver/copper, and European rate proxies.
 Primary: yfinance (Yahoo Finance) — no API key required
-Fallback: Alpha Vantage — requires free API key
+Fallback for European rates: FRED (St. Louis Fed) — no API key required
+Fallback for individual tickers: Alpha Vantage — requires free API key
 """
 
 import yfinance as yf
@@ -41,7 +42,7 @@ TICKERS = {
     "US10Y":   "^TNX",
     "US2Y":    "^IRX",
     "US30Y":   "^TYX",
-    # European rates (these often fail on Yahoo — handled gracefully)
+    # European rates (these often fail on Yahoo — FRED fallback handles them)
     "DE10Y":   "^DE10Y-EUR",
     "UK10Y":   "^TMBMKGB-10Y",
     # Commodities
@@ -95,6 +96,42 @@ def fetch_intraday_range(ticker: str) -> dict | None:
         }
     except Exception:
         return None
+
+
+def fetch_european_rates_fred() -> dict:
+    """
+    Fetch DE10Y and UK10Y from FRED as fallback when Yahoo Finance returns N/A.
+    No API key required — uses the public CSV endpoint.
+    Note: FRED data is typically end-of-prior-day, not real-time.
+    """
+    series_map = {
+        "DE10Y": "IRLTLT01DEM156N",  # Germany 10Y
+        "UK10Y": "IRLTLT01GBM156N",  # UK 10Y
+    }
+    results = {}
+    for label, series_id in series_map.items():
+        try:
+            url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
+            resp = requests.get(url, timeout=10)
+            if resp.status_code != 200:
+                continue
+            from io import StringIO
+            df = pd.read_csv(StringIO(resp.text), parse_dates=["DATE"])
+            df = df[df["VALUE"] != "."].dropna()
+            df["VALUE"] = pd.to_numeric(df["VALUE"], errors="coerce")
+            df = df.dropna()
+            if len(df) >= 2:
+                current = float(df["VALUE"].iloc[-1])
+                prev    = float(df["VALUE"].iloc[-2])
+                results[label] = {
+                    "price":      round(current, 4),
+                    "pct_chg":    round(current - prev, 4),  # absolute bps change for rates
+                    "prev_close": round(prev, 4),
+                    "_source":    "FRED (prior day)",
+                }
+        except Exception:
+            pass
+    return results
 
 
 def fetch_yahoo_data() -> dict:
@@ -194,9 +231,19 @@ def fetch_alpha_vantage_fallback(api_key: str, symbols: list) -> dict:
 
 
 def get_market_snapshot(alpha_vantage_key: str = "") -> dict:
-    """Master: Yahoo first, patch with Alpha Vantage, enrich with intraday."""
+    """Master: Yahoo first, patch European rates with FRED, then Alpha Vantage for others."""
     snapshot = fetch_yahoo_data()
 
+    # Always try FRED for European rates — Yahoo frequently fails on these
+    eu_rates = fetch_european_rates_fred()
+    for label, data in eu_rates.items():
+        existing = snapshot.get(label, {})
+        if not existing or existing.get("price") is None:
+            snapshot[label] = data
+            if "_source" in snapshot:
+                snapshot["_source"] = snapshot["_source"] + " + FRED"
+
+    # Alpha Vantage fallback for remaining failed tickers
     failed = [k for k, v in snapshot.items()
               if not k.startswith("_") and isinstance(v, dict) and v.get("price") is None]
 
@@ -241,7 +288,12 @@ def format_snapshot_for_prompt(snapshot: dict) -> str:
         p    = d["price"]
         chg  = d.get("pct_chg", 0) or 0
         sign = "+" if chg >= 0 else ""
-        base = f"{label}: {_fmt_price(p)} ({sign}{chg:.2f}%)"
+
+        # For rates, show absolute bps change if sourced from FRED
+        if d.get("_source") and "FRED" in d.get("_source", ""):
+            base = f"{label}: {_fmt_price(p)}% ({sign}{chg:.2f} bps — prior day, FRED)"
+        else:
+            base = f"{label}: {_fmt_price(p)} ({sign}{chg:.2f}%)"
 
         if show_range:
             hi = d.get("intraday_high")
