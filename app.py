@@ -636,7 +636,7 @@ time_disp = now_et.strftime("%H:%M ET")
 st.markdown(
     f"""<div class="cc-header">
         <div class="cc-header-left">
-            <span class="cc-logo">Core Convexity</span>
+            <span class="cc-logo">News</span>
             <div class="cc-divider-v"></div>
             <span class="cc-title"><span class="live-dot"></span>Macro Market Briefing</span>
         </div>
