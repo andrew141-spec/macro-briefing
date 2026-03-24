@@ -357,27 +357,56 @@ Now write the briefing. Follow this structure exactly as shown in the reference 
 {date_str.upper()} | {session.upper()} BRIEFING
 {div}
 
-[OPENING PARAGRAPH — 1-2 sentences. State the dominant session character and primary driver. \
-No wind-up. Start with what is happening.]
+[OPENING PARAGRAPH — 1-2 sentences maximum. State the dominant session character \
+(risk-on / risk-off / mixed / headline-driven) and the single primary driver by name. \
+End after stating the driver — do NOT add "potentially allowing..." or "which could..." \
+hedges. The opening ends with what is happening, not speculation about consequences.]
 
-[CROSS-ASSET NARRATIVE — Use bold sub-theme labels that describe what actually happened, \
-not generic asset class names. Cover: the dominant macro driver in depth, equities with \
-sector rotation, rates including Bund and Gilt, FX with the most informative cross, \
-commodities with intraday context for big movers, crypto. \
-Flag any cross-asset contradictions explicitly. \
-Do NOT restate any number after it has appeared once.]
+[CROSS-ASSET NARRATIVE — Bold sub-theme labels that describe what actually happened today, \
+not generic labels. REQUIRED sub-themes: dominant macro driver, equities/sector rotation, \
+rates (must include Bund + Gilt), FX, commodities (intraday range for any move >2%), crypto. \
+CRYPTO REQUIREMENT: Two distinct paragraphs. Paragraph 1: exact prices and pct moves, \
+identify if there is a crypto-specific driver. Paragraph 2: compare crypto's move to \
+equities — if flat while equities are up, state explicitly: "The flat tape in crypto \
+despite the equity rally is consistent with a geopolitical relief trade rather than a \
+growth re-rating; genuine growth re-ratings lift crypto alongside equities, \
+geopolitical relief trades do not." Never repeat paragraph 1 content. \
+COMMODITIES REQUIREMENT: For Morning session, state where oil is trading NOW versus \
+where it closed in the prior session — context is required, not just the current level. \
+CROSS-ASSET CONTRADICTIONS: If any asset moves against the expected direction given \
+the session theme, flag it explicitly. "Gold steady despite risk-on tone suggests \
+some investors are still hedging tail risk" is correct. Do NOT explain contradictions \
+away — name them and let the reader decide. \
+Do NOT restate any number after it has appeared once in the document.]
 
 Policy and geopolitics shaping pricing
-[If central bank speakers or geopolitical developments appeared in the headlines, \
-integrate them here. Quote specific language from Fed/ECB/BOE speakers if present. \
-If none, omit this section entirely — do not fabricate policy commentary.]
+[Include ONLY if Fed/ECB/BOE/BOJ speakers or major geopolitical policy decisions \
+appeared in the headlines. Quote the speaker's exact language if available. \
+If a speaker is quoted, state what it means for the policy path specifically — \
+not generically. If nothing material appeared, OMIT THIS SECTION ENTIRELY. \
+Do not write this section to fill space.]
 
 Corporate News
-[3–5 bullets. Rule F materiality filter applies. One sentence each. Direct implication only.]
+[STRICT MATERIALITY FILTER — only include stories from the MATERIAL CORPORATE NEWS \
+section of the headlines, and only if they meet at least one: \
+(a) capital allocation event >$500M, (b) M&A / LBO / activist, \
+(c) earnings/guidance that moves sector sentiment, \
+(d) direct operational tie to today's dominant macro theme. \
+OpenAI private risk disclosures = NO. Small-cap earnings = NO. \
+CEO strategy quotes without capital decisions = NO. \
+3–5 bullets maximum. One sentence each. State the direct market implication as fact.]
 
 What to watch next session
-[2–4 bullets. Specific variable + transmission mechanism + directional split. \
-Order by market importance.]
+[2–4 bullets. Each bullet MUST follow this structure: \
+"[Specific variable] — if [condition A], [mechanism] moves [asset] to [level]; \
+if [condition B], [opposite mechanism]." \
+BANNED endings: "will be closely watched", "will be important", "could impact markets", \
+"will likely determine". These are placeholders, not analysis. \
+Every bullet needs a level or a condition that can be checked tomorrow morning. \
+Example: "Whether Brent holds above $95 — a sustained break lower removes the \
+geopolitical supply premium and opens a move toward $88 support, compressing energy \
+breakevens 10–15bps and supporting multiple expansion in equities; a bounce above \
+$100 re-ignites the inflation repricing that pressured front-end yields last week."]
 
 {div}
 Powered by Traderverse | {date_str}
