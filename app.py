@@ -30,9 +30,9 @@ st.markdown("""
 
 :root {
     --bg-void:      #000000;
-    --bg-deep:      #0a0a0e;
-    --bg-panel:     #0e0e14;
-    --bg-card:      #12121a;
+    --bg-deep:      #000000;
+    --bg-panel:     #000000;
+    --bg-card:      #000000;
     --bg-hover:     #16161f;
     --border-dim:   #1c1c2a;
     --border-med:   #252535;
