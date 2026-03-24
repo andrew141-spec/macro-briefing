@@ -495,9 +495,14 @@ def run_generation(session_override: str = None):
         )
         st.success(f"Briefing generated via {model_label} — {result['session']} | {result['generated_at']}")
     else:
-        st.error(f"Generation failed")
+        st.error("Generation failed")
         st.write(f"**Prompt size:** {result.get('prompt_chars', 'unknown')} chars")
-        st.code(result.get('error', 'No error detail captured'), language=None)
+        error_detail = result.get('error') or 'No error detail captured'
+        st.code(error_detail, language=None)
+        st.write("**Debug info:**")
+        for k, v in result.items():
+            if k not in ('briefing', 'market_data_raw', 'market_data_str', 'news_headlines'):
+                st.write(f"- `{k}`: {str(v)[:300]}")
 
 
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
