@@ -495,7 +495,9 @@ def run_generation(session_override: str = None):
         )
         st.success(f"Briefing generated via {model_label} — {result['session']} | {result['generated_at']}")
     else:
-        st.error(f"Generation failed: {result.get('error', 'Unknown error')}")
+        st.error(f"Generation failed")
+        st.write(f"**Prompt size:** {result.get('prompt_chars', 'unknown')} chars")
+        st.code(result.get('error', 'No error detail captured'), language=None)
 
 
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
