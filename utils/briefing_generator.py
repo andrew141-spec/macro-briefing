@@ -493,7 +493,7 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
 
     # 2. News headlines
     try:
-        headlines = fetch_headlines(max_per_feed=15, max_total=60)
+        headlines = fetch_headlines(max_per_feed=10, max_total=45)
         result["news_headlines"] = headlines
         news_str = format_headlines_for_prompt(headlines)
     except Exception as e:
