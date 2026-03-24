@@ -507,7 +507,9 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
         + build_prompt(session, mkt_str, news_str, date_str, rsi_str)
     )
     prompt_chars = len(full_prompt)
+
     result["prompt_chars"] = prompt_chars
+    print(f"[BRIEFING] prompt_chars={prompt_chars}", flush=True)
 
     # 4. Call Gemini
     if gemini_api_key:
@@ -522,42 +524,63 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                     "maxOutputTokens": 4096,
                 },
             }
+            print(f"[GEMINI] Sending request...", flush=True)
             resp = requests.post(
                 f"{GEMINI_API_URL}?key={gemini_api_key}",
                 headers={"Content-Type": "application/json"},
                 json=payload,
                 timeout=180,
             )
+            print(f"[GEMINI] status={resp.status_code}", flush=True)
             resp.raise_for_status()
             data = resp.json()
-            # Check for blocked content
+            print(f"[GEMINI] response keys={list(data.keys())}", flush=True)
             if "candidates" not in data:
                 block_reason = data.get("promptFeedback", {}).get("blockReason", "unknown")
-                result["error"] = (result.get("error") or "") + f" | Gemini blocked: {block_reason} | full response: {str(data)[:300]}"
+                err = f"Gemini blocked: {block_reason} | full response: {str(data)[:500]}"
+                print(f"[GEMINI] BLOCKED: {err}", flush=True)
+                result["error"] = (result.get("error") or "") + f" | {err}"
             else:
                 candidate = data["candidates"][0]
                 finish_reason = candidate.get("finishReason", "")
+                print(f"[GEMINI] finishReason={finish_reason}", flush=True)
                 if finish_reason == "SAFETY":
-                    result["error"] = (result.get("error") or "") + f" | Gemini safety block"
+                    result["error"] = (result.get("error") or "") + f" | Gemini safety block | candidate={str(candidate)[:300]}"
+                    print(f"[GEMINI] safety block: {candidate}", flush=True)
                 else:
-                    result["briefing"] = candidate["content"]["parts"][0]["text"]
-                    return result
+                    try:
+                        result["briefing"] = candidate["content"]["parts"][0]["text"]
+                        print(f"[GEMINI] SUCCESS, briefing_len={len(result['briefing'])}", flush=True)
+                        return result
+                    except (KeyError, IndexError) as ke:
+                        err = f"Gemini parse error: {ke} | candidate={str(candidate)[:400]}"
+                        print(f"[GEMINI] {err}", flush=True)
+                        result["error"] = (result.get("error") or "") + f" | {err}"
         except requests.exceptions.Timeout:
-            result["error"] = (result.get("error") or "") + f" | Gemini timeout after 180s (prompt was {prompt_chars} chars)"
+            err = f"Gemini timeout after 180s (prompt was {prompt_chars} chars)"
+            print(f"[GEMINI] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response else "?"
             body   = e.response.text[:600] if e.response else "no response body"
-            result["error"] = (result.get("error") or "") + f" | Gemini HTTP {status}: {body}"
+            err = f"Gemini HTTP {status}: {body}"
+            print(f"[GEMINI] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
         except KeyError as e:
-            result["error"] = (result.get("error") or "") + f" | Gemini parse error (missing key {e}): {str(data)[:300]}"
+            err = f"Gemini parse error (missing key {e}): {str(data)[:300]}"
+            print(f"[GEMINI] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
         except Exception as e:
-            result["error"] = (result.get("error") or "") + f" | Gemini error ({type(e).__name__}): {e}"
+            err = f"Gemini error ({type(e).__name__}): {e}"
+            print(f"[GEMINI] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
 
     # 5. Fallback to Groq if Gemini fails or no key provided
     if groq_api_key:
         GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
         GROQ_MODEL   = "llama-3.3-70b-versatile"
         try:
+            print(f"[GROQ] Sending request...", flush=True)
             payload = {
                 "model": GROQ_MODEL,
                 "messages": [
@@ -575,15 +598,24 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
                 json=payload,
                 timeout=180,
             )
+            print(f"[GROQ] status={resp.status_code}", flush=True)
             resp.raise_for_status()
             result["briefing"] = resp.json()["choices"][0]["message"]["content"]
+            print(f"[GROQ] SUCCESS, briefing_len={len(result['briefing'])}", flush=True)
         except requests.exceptions.Timeout:
-            result["error"] = (result.get("error") or "") + f" | Groq timeout after 180s"
+            err = f"Groq timeout after 180s"
+            print(f"[GROQ] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response else "?"
             body   = e.response.text[:600] if e.response else "no response body"
-            result["error"] = (result.get("error") or "") + f" | Groq HTTP {status}: {body}"
+            err = f"Groq HTTP {status}: {body}"
+            print(f"[GROQ] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
         except Exception as e:
-            result["error"] = (result.get("error") or "") + f" | Groq error ({type(e).__name__}): {e}"
+            err = f"Groq error ({type(e).__name__}): {e}"
+            print(f"[GROQ] {err}", flush=True)
+            result["error"] = (result.get("error") or "") + f" | {err}"
 
+    print(f"[BRIEFING] DONE — error={result.get('error')}, briefing={'set' if result.get('briefing') else 'empty'}", flush=True)
     return result
