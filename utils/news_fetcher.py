@@ -16,29 +16,36 @@ import re
 
 RSS_FEEDS = [
     # Tier 1 — highest signal
-    {"name": "Reuters Business",      "url": "https://feeds.reuters.com/reuters/businessNews",          "tier": 1},
-    {"name": "Reuters Markets",       "url": "https://feeds.reuters.com/reuters/companyNews",            "tier": 1},
-    {"name": "FT Markets",            "url": "https://www.ft.com/rss/home/uk",                           "tier": 1},
-    {"name": "WSJ Markets",           "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",            "tier": 1},
-    {"name": "WSJ Economy",           "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",              "tier": 1},
-    {"name": "Bloomberg Markets",     "url": "https://feeds.bloomberg.com/markets/news.rss",             "tier": 1},
+    {"name": "Reuters Business",      "url": "https://feeds.reuters.com/reuters/businessNews",                      "tier": 1},
+    {"name": "Reuters Markets",       "url": "https://feeds.reuters.com/reuters/companyNews",                        "tier": 1},
+    {"name": "FT Markets",            "url": "https://www.ft.com/rss/home/uk",                                       "tier": 1},
+    {"name": "WSJ Markets",           "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",                        "tier": 1},
+    {"name": "WSJ Economy",           "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",                          "tier": 1},
+    {"name": "Bloomberg Markets",     "url": "https://feeds.bloomberg.com/markets/news.rss",                         "tier": 1},
     # Tier 2 — good breadth
-    {"name": "CNBC Top News",         "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",    "tier": 2},
-    {"name": "CNBC Economy",          "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",     "tier": 2},
-    {"name": "CNBC Finance",          "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",     "tier": 2},
-    {"name": "MarketWatch Top",       "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories","tier": 2},
-    {"name": "Yahoo Finance",         "url": "https://finance.yahoo.com/news/rssindex",                  "tier": 2},
+    {"name": "CNBC Top News",         "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",                "tier": 2},
+    {"name": "CNBC Economy",          "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",                 "tier": 2},
+    {"name": "CNBC Markets",          "url": "https://www.cnbc.com/id/15839135/device/rss/rss.html",                 "tier": 2},
+    {"name": "CNBC Finance",          "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",                 "tier": 2},
+    {"name": "MarketWatch Top",       "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",           "tier": 2},
+    {"name": "Yahoo Finance",         "url": "https://finance.yahoo.com/news/rssindex",                              "tier": 2},
+    {"name": "TheStreet",             "url": "https://www.thestreet.com/rss/main.rss",                               "tier": 2},
+    {"name": "Investing.com",         "url": "https://www.investing.com/rss/news.rss",                               "tier": 2},
     # Tier 3 — supplementary
-    {"name": "The Economist Finance", "url": "https://www.economist.com/finance-and-economics/rss.xml",  "tier": 3},
-    {"name": "Investing.com",         "url": "https://www.investing.com/rss/news.rss",                   "tier": 3},
+    {"name": "The Economist Finance", "url": "https://www.economist.com/finance-and-economics/rss.xml",              "tier": 3},
+    {"name": "Fortune Markets",       "url": "https://fortune.com/feed/",                                            "tier": 3},
+    {"name": "Morningstar",           "url": "https://www.morningstar.com/feeds/all-articles.rss",                   "tier": 3},
+    {"name": "Interactive Brokers",   "url": "https://www.interactivebrokers.com/en/trading/market-news-rss.php",    "tier": 3},
 ]
 
 # More focused GDELT query — targets the specific themes that move markets
 GDELT_URL = (
     "https://api.gdeltproject.org/api/v2/doc/doc"
-    "?query=(oil OR crude OR OPEC OR Hormuz OR energy) OR "
-    "(Federal Reserve OR inflation OR CPI OR interest rate OR yield) OR "
-    "(earnings OR guidance OR acquisition OR merger OR IPO OR buyback)"
+    "?query=(oil OR crude OR OPEC OR Hormuz OR energy OR WTI OR Brent) OR "
+    "(Federal Reserve OR Fed OR inflation OR CPI OR interest rate OR yield OR Treasury) OR "
+    "(earnings OR guidance OR acquisition OR merger OR IPO OR buyback OR downgrade OR upgrade) OR "
+    "(Iran OR geopolitical OR war OR ceasefire OR sanctions OR tariff) OR "
+    "(Goldman Sachs OR JPMorgan OR recession OR stagflation OR rate hike OR rate cut)"
     "&mode=artlist&maxrecords=30&timespan=8h&format=json&sourcelang=english"
 )
 
@@ -95,13 +102,15 @@ MATERIAL_CORPORATE_PATTERNS = [
 # Named strategists / firms whose commentary qualifies as desk-note worthy
 STRATEGIST_PATTERNS = [
     r"\b(goldman sachs|jpmorgan|morgan stanley|citigroup|bank of america|barclays|ubs|deutsche bank)\b",
-    r"\b(macquarie|natixis|bnp paribas|nomura|jefferies|piper sandler|raymond james)\b",
-    r"\b(ed yardeni|yardeni research|andrew tyler|thierry wizman|david solomon)\b",
-    r"\b(fund manager survey|bank of america survey|bofa survey)\b",
-    r"\b(strategist|chief economist|chief investment officer|head of.{0,30}strategy)\b",
+    r"\b(macquarie|natixis|bnp paribas|nomura|jefferies|piper sandler|raymond james|hsbc|wells fargo)\b",
+    r"\b(ed yardeni|yardeni research|andrew tyler|thierry wizman|david solomon|jim cramer)\b",
+    r"\b(fund manager survey|bank of america survey|bofa survey|morningstar|ibkr|interactive brokers)\b",
+    r"\b(strategist|chief economist|chief investment officer|head of.{0,30}strategy|desk note)\b",
     r"\b(raises (odds|probability|target)|cuts (odds|probability|forecast|target))\b",
-    r"\b(tactically (bullish|bearish)|overweight|underweight|upgrade|downgrade)\b",
+    r"\b(tactically (bullish|bearish)|overweight|underweight|upgrade|downgrade|initiates coverage)\b",
     r"\b(meltdown|melt.?up|capitulation|margin call|forced selling|liquidity crunch)\b",
+    r"\b(recession probability|price target|bear case|bull case|fair value|12.month target)\b",
+    r"\b(cramer|seeking alpha|thestreet|fortune|barron.s).{0,50}(says|warns|argues|notes|calls)\b",
 ]
 
 
