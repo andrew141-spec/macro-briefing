@@ -59,7 +59,7 @@ html, body, [class*="css"]{
         var(--bg) !important;
 }
 
-#MainMenu, footer, hedaer {visibility:hidden;}
+#MainMenu, footer, header {visibility:hidden;}
 .block-container{
     max-width:100% !important;
     padding:0 .75rem 1rem .75rem !important;
