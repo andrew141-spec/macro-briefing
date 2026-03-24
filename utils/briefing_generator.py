@@ -430,7 +430,7 @@ FORWARD-LOOKING SCENARIOS — MANDATORY: 2-4 key variables. For each: if X holds
 
 CORPORATE NEWS: Company — one sentence, specific event, direct market read-through. No "could." No CEO quotes without capital allocation. 3-5 bullets max.
 
-FOOTER: "Powered by Traderverse | DD/MM/YYYY" — use format 23/03/2026.
+FOOTER: "| DD/MM/YYYY" — use format 23/03/2026.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ABSOLUTE PROHIBITIONS
@@ -625,10 +625,10 @@ State the specific policy path implication. Be decisive about what the Fed can a
 OMIT ENTIRELY if nothing material.]
 
 Corporate News
-[Only bullets passing Q11. 3-5 max. One sentence. Direct market implication as a stated fact.]
+[Only bullets passing Q11. 10 max. Two sentences. Direct market implication as a stated fact.]
 
 What to watch next session
-[2-4 bullets. EXACT format:
+[3-5 bullets. EXACT format:
 "[Specific variable] — if [condition A + specific price level], [mechanism] pushes
 [specific asset] to [specific level]; if [condition B], [opposite mechanism and outcome]."
 BANNED: could / might / may / would / remains to be seen / will be closely watched /
@@ -636,7 +636,7 @@ will be important / could impact / could signal / could lead to / it could.
 Every bullet needs a specific, checkable price level.]
 
 {div}
-Powered by Traderverse | {footer_date}
+Powered by Groq | {footer_date}
 """
 
 
