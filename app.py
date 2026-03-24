@@ -29,7 +29,7 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-void:      #060608;
+    --bg-void:      #000000;
     --bg-deep:      #0a0a0e;
     --bg-panel:     #0e0e14;
     --bg-card:      #12121a;
