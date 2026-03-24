@@ -304,9 +304,15 @@ NEVER fabricate Fed funds probability percentages not in the data.
 NEVER include a corporate bullet that is only a CEO strategy comment.
 NEVER use generic sub-labels like "Equities:" or "Rates:" — always name the story.
 
+NEVER use "could", "might", "may", "would suggest", "may imply" as hedges in analytical sentences anywhere in the briefing. State the mechanism as fact. CORRECT: "a break above $90 keeps front-end yields elevated and pressures equities." WRONG: "a break above $90 could keep front-end yields elevated."
+
+NEVER include an OpenAI risk disclosure, private fund redemption rate, or CEO strategy quote as a corporate bullet. These do not clear the materiality bar under any framing.
+
+NEVER include a Strategist section unless a named individual at a named firm made a specific quantified call — a percentage, a price target, or a probability. A firm dropping a regional EM rate call with no named person and no number does not qualify.
+
 ALWAYS include Germany 10Y Bund and UK 10Y Gilt in the rates section.
 ALWAYS use the exact RSI numbers provided.
-ALWAYS cite intraday high or low for any asset that moved more than 2%.
+ALWAYS cite intraday high or low for any asset that moved more than 2%, AND interpret the range — a $17 WTI intraday range is not just a number, it signals something about conviction and positioning. Name what it signals.
 """
 
 
@@ -394,16 +400,26 @@ Q5. EUROPEAN RATES: Are DE10Y and UK10Y in the data?
     Estimate Gilt = US 10Y move × 0.65, label "(est.)".
     Both MUST appear in the rates section — skipping them is not permitted.
 
-Q6. STRATEGIST FILTER: Does the STRATEGIST COMMENTARY section contain a named individual
-    AND a specific number (probability %, price target, index level)?
-    YES → include the Strategist section.
-    NO named person with a specific number → OMIT the section entirely.
+Q6. STRATEGIST FILTER — three criteria ALL must be met:
+    (1) A named individual (first and last name, not just a firm name)
+    (2) At a named firm
+    (3) A specific quantified call: a percentage, a price level, an index target,
+        or a probability — "dropped its call" or "adding hikes" with no number fails.
+    If all three are not met → OMIT the Strategist section entirely.
+    A firm-level call with no named person = FAIL. A named person with no number = FAIL.
 
-Q7. CORPORATE MATERIALITY: For each corporate headline, confirm at least one of:
-    (a) capital event >$500M, (b) M&A/LBO/activist stake, (c) earnings or guidance
-    that moves sector sentiment, (d) direct operational tie to today's macro driver.
-    OpenAI risk disclosures = NO. Redemption rates without capital decision = NO.
-    CEO strategy quotes without capital allocation = NO.
+Q7. CORPORATE MATERIALITY — each bullet must pass at least one:
+    (a) Capital event >$500M (investment, buyback, bond sale, dividend with dollar size)
+    (b) M&A, LBO, activist stake, or spin-off
+    (c) Earnings or guidance that moves sector sentiment (must include a number)
+    (d) Direct operational tie to today's dominant macro theme
+
+    AUTOMATIC DISQUALIFIERS — these never pass regardless of framing:
+    - OpenAI risk disclosures, IPO prospectus filings, or dependency warnings
+    - Private fund redemption rates or withdrawal percentages (not a capital decision)
+    - CEO strategy quotes, vision statements, or market commentary without capital action
+    - Any story where the dollar amount is not stated or is under $500M
+    - Regional EM central bank calls with no tie to US/EU/UK policy
 
 Only after completing this audit silently, write the briefing below.
 
@@ -428,7 +444,9 @@ CRYPTO — two paragraphs required:
   Diverging = state explicitly and name the implication. Never repeat Para 1 numbers.
 
 COMMODITIES: Morning briefing — first oil mention must include current vs. prior close.
-  Any move >2%: cite the intraday high or low from the range data.
+  Any move >2%: cite the intraday high AND low, then interpret what the range SIZE
+  signals about conviction. A $17 WTI intraday range is not just a number — name
+  what it means for positioning and tail risk.
 
 CONTRADICTIONS: Every item flagged in Q4 must appear in the narrative.
   Do not explain contradictions away — name them and let the reader decide.]
@@ -456,9 +474,19 @@ if [condition B], [opposite mechanism and outcome]."
 BANNED anywhere in this section:
 "could" / "might" / "may" / "would" / "remains to be seen" /
 "will be closely watched" / "will be important" / "could impact markets" /
-"could signal" / "could lead to" / "it could"
+"could signal" / "could lead to" / "it could" / "this could"
 
-Every bullet must contain at least one specific price level checkable tomorrow morning.]
+CORRECT example:
+"WTI — if it holds above $90, front-end yields resume their climb toward 4.50%
+and XLE outperforms; if it breaks below $85, the geopolitical risk premium drains
+from crude and the path toward S&P 6,700 reopens."
+
+WRONG (banned):
+"WTI — if it holds above $90, yields could stay elevated; if it falls below $85,
+equities could rally."
+
+State every mechanism as fact. Every bullet needs a specific price level
+checkable the next morning.]
 
 {div}
 Powered by Traderverse | {date_str}
