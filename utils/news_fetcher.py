@@ -1,6 +1,7 @@
 """
-News Fetcher — upgraded for institutional-quality corporate news.
-Sources: RSS (Reuters/FT/Bloomberg/WSJ/CNBC) + GDELT free API.
+News Fetcher — upgraded for institutional-quality macro briefings.
+Sources: RSS (Reuters/FT/Bloomberg/WSJ/CNBC/MarketWatch) + GDELT free API.
+Adds: strategist commentary detection, tighter materiality filter.
 All free, no API keys required.
 """
 
@@ -14,21 +15,22 @@ from datetime import datetime, timezone, timedelta
 import re
 
 RSS_FEEDS = [
-    # Tier 1 — highest signal for macro/markets
-    {"name": "Reuters Business",       "url": "https://feeds.reuters.com/reuters/businessNews",         "tier": 1},
-    {"name": "Reuters Markets",        "url": "https://feeds.reuters.com/reuters/companyNews",           "tier": 1},
-    {"name": "FT Markets",             "url": "https://www.ft.com/rss/home/uk",                          "tier": 1},
-    {"name": "WSJ Markets",            "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",           "tier": 1},
-    {"name": "WSJ Economy",            "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",             "tier": 1},
+    # Tier 1 — highest signal
+    {"name": "Reuters Business",      "url": "https://feeds.reuters.com/reuters/businessNews",          "tier": 1},
+    {"name": "Reuters Markets",       "url": "https://feeds.reuters.com/reuters/companyNews",            "tier": 1},
+    {"name": "FT Markets",            "url": "https://www.ft.com/rss/home/uk",                           "tier": 1},
+    {"name": "WSJ Markets",           "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml",            "tier": 1},
+    {"name": "WSJ Economy",           "url": "https://feeds.a.dj.com/rss/RSSWorldNews.xml",              "tier": 1},
+    {"name": "Bloomberg Markets",     "url": "https://feeds.bloomberg.com/markets/news.rss",             "tier": 1},
     # Tier 2 — good breadth
-    {"name": "CNBC Top News",          "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",   "tier": 2},
-    {"name": "CNBC Economy",           "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",    "tier": 2},
-    {"name": "CNBC Finance",           "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",    "tier": 2},
-    {"name": "MarketWatch Top",        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories","tier": 2},
-    {"name": "Yahoo Finance",          "url": "https://finance.yahoo.com/news/rssindex",                 "tier": 2},
+    {"name": "CNBC Top News",         "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",    "tier": 2},
+    {"name": "CNBC Economy",          "url": "https://www.cnbc.com/id/20910258/device/rss/rss.html",     "tier": 2},
+    {"name": "CNBC Finance",          "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",     "tier": 2},
+    {"name": "MarketWatch Top",       "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories","tier": 2},
+    {"name": "Yahoo Finance",         "url": "https://finance.yahoo.com/news/rssindex",                  "tier": 2},
     # Tier 3 — supplementary
-    {"name": "The Economist Finance",  "url": "https://www.economist.com/finance-and-economics/rss.xml", "tier": 3},
-    {"name": "Investing.com",          "url": "https://www.investing.com/rss/news.rss",                  "tier": 3},
+    {"name": "The Economist Finance", "url": "https://www.economist.com/finance-and-economics/rss.xml",  "tier": 3},
+    {"name": "Investing.com",         "url": "https://www.investing.com/rss/news.rss",                   "tier": 3},
 ]
 
 GDELT_URL = (
@@ -43,7 +45,7 @@ MACRO_KEYWORDS = [
     "oil", "crude", "brent", "wti", "opec", "energy", "pipeline", "refinery",
     "china", "iran", "russia", "ukraine", "sanctions", "tariff", "trade", "hormuz", "strait",
     "dollar", "yen", "euro", "sterling", "dxy", "currency", "forex",
-    "treasury", "yield", "bond", "yield curve", "spread",
+    "treasury", "yield", "bond", "yield curve", "spread", "bund", "gilt",
     "bank", "jpmorgan", "goldman", "morgan stanley", "citi", "wells fargo", "bank of america",
     "earnings", "revenue", "profit", "guidance", "outlook", "forecast",
     "merger", "acquisition", "buyout", "lbo", "deal", "ipo", "spin-off", "stake",
@@ -55,27 +57,28 @@ MACRO_KEYWORDS = [
     "geopolit", "war", "conflict", "military", "nuclear", "strike",
     "debt", "fiscal", "deficit", "spending", "budget",
     "invest", "billion", "million", "fund", "portfolio",
+    # Strategist commentary triggers
+    "strategist", "analyst", "economist", "desk", "note", "warns", "raises odds",
+    "cuts forecast", "meltdown", "rally", "target", "probability",
 ]
 
-# Stories that sound financial but carry no market signal — exclude them
 NOISE_PATTERNS = [
     r"foldable (iphone|phone|device)",
     r"chuck norris",
     r"meme",
     r"celebrity",
-    r"best days.*(halve|returns)",   # generic market timing advice
+    r"best days.*(halve|returns)",
     r"market timing",
     r"sprouts farmers",
     r"stay invested",
     r"don.t panic",
     r"personal finance tips",
     r"how to invest",
-    r"warren buffett says (invest|buy|hold)",  # generic advice without capital event
+    r"warren buffett says (invest|buy|hold)",
 ]
 
-# Patterns that strongly signal material corporate news
 MATERIAL_CORPORATE_PATTERNS = [
-    r"\$[\d,]+\s*(billion|million|bn|mn)\b",   # dollar amount mentioned
+    r"\$[\d,]+\s*(billion|million|bn|mn)\b",
     r"\b(acquire|acqui|merger|takeover|buyout|lbo|ipo|spin.?off)\b",
     r"\b(activist|elliott|starboard|icahn|trian|third point|pershing)\b",
     r"\b(earnings|quarterly results|guidance|raised? (outlook|forecast|guidance))\b",
@@ -84,6 +87,18 @@ MATERIAL_CORPORATE_PATTERNS = [
     r"\b(plant|factory|facility).{0,30}(shut|clos|open|expan)",
     r"\b(layoff|cut(ting)? jobs|restructur|headcount)\b",
     r"\bCEO.{0,30}(resign|step|replac|appoint)\b",
+]
+
+# Named strategists / firms whose commentary qualifies as desk-note worthy
+STRATEGIST_PATTERNS = [
+    r"\b(goldman sachs|jpmorgan|morgan stanley|citigroup|bank of america|barclays|ubs|deutsche bank)\b",
+    r"\b(macquarie|natixis|bnp paribas|nomura|jefferies|piper sandler|raymond james)\b",
+    r"\b(ed yardeni|yardeni research|andrew tyler|thierry wizman|david solomon)\b",
+    r"\b(fund manager survey|bank of america survey|bofa survey)\b",
+    r"\b(strategist|chief economist|chief investment officer|head of.{0,30}strategy)\b",
+    r"\b(raises (odds|probability|target)|cuts (odds|probability|forecast|target))\b",
+    r"\b(tactically (bullish|bearish)|overweight|underweight|upgrade|downgrade)\b",
+    r"\b(meltdown|melt.?up|capitulation|margin call|forced selling|liquidity crunch)\b",
 ]
 
 
@@ -114,20 +129,24 @@ def _relevant(title, summary=""):
 
 
 def _is_noise(title, summary=""):
-    """Return True if the story matches known low-signal patterns."""
     combined = (title + " " + summary).lower()
     return any(re.search(p, combined) for p in NOISE_PATTERNS)
 
 
 def _is_material_corporate(title, summary=""):
-    """Return True if the story likely clears the materiality bar."""
     combined = (title + " " + summary).lower()
     return any(re.search(p, combined) for p in MATERIAL_CORPORATE_PATTERNS)
 
 
+def _is_strategist_commentary(title, summary=""):
+    """Return True if this headline contains named strategist/bank desk commentary."""
+    combined = (title + " " + summary).lower()
+    return any(re.search(p, combined) for p in STRATEGIST_PATTERNS)
+
+
 def _priority(h):
     t = (h.get("title", "") + " " + h.get("summary", "")).lower()
-    # Geopolitical / energy supply risk — highest priority
+    # Geopolitical / energy supply risk
     if any(w in t for w in ["iran", "strait", "hormuz", "opec", "war", "military", "sanction", "strike"]):
         return 0
     # Fed / rates / inflation
@@ -136,10 +155,13 @@ def _priority(h):
     # Energy prices
     if any(w in t for w in ["oil", "crude", "brent", "wti", "energy", "pipeline", "refinery"]):
         return 2
-    # Material corporate (M&A, earnings, capital events)
+    # Named strategist commentary — elevated priority for desk-note voice
+    if _is_strategist_commentary(t):
+        return 2
+    # Material corporate
     if _is_material_corporate(t):
         return 3
-    # Macro geopolitics (China, Russia, trade)
+    # Macro geopolitics
     if any(w in t for w in ["china", "russia", "ukraine", "tariff", "trade war", "export control"]):
         return 4
     # Broad market
@@ -151,8 +173,6 @@ def _priority(h):
 def _fetch_rss(max_per_feed=10):
     results, seen = [], set()
     headers = {"User-Agent": "Mozilla/5.0 (compatible; MacroBot/1.0)"}
-
-    # Sort feeds by tier so tier-1 sources fill the list first
     sorted_feeds = sorted(RSS_FEEDS, key=lambda f: f.get("tier", 9))
 
     for feed in sorted_feeds:
@@ -178,11 +198,12 @@ def _fetch_rss(max_per_feed=10):
                     continue
                 seen.add(title)
                 results.append({
-                    "title":    title,
-                    "source":   feed["name"],
-                    "summary":  summary,
-                    "pub_date": pubdate,
-                    "material": _is_material_corporate(title, summary),
+                    "title":       title,
+                    "source":      feed["name"],
+                    "summary":     summary,
+                    "pub_date":    pubdate,
+                    "material":    _is_material_corporate(title, summary),
+                    "strategist":  _is_strategist_commentary(title, summary),
                 })
                 count += 1
         except Exception:
@@ -200,18 +221,19 @@ def _fetch_gdelt():
             title = _clean(art.get("title", ""))
             if title and _relevant(title) and not _is_noise(title):
                 results.append({
-                    "title":    title,
-                    "source":   "GDELT",
-                    "summary":  "",
-                    "pub_date": "",
-                    "material": _is_material_corporate(title),
+                    "title":      title,
+                    "source":     "GDELT",
+                    "summary":    "",
+                    "pub_date":   "",
+                    "material":   _is_material_corporate(title),
+                    "strategist": _is_strategist_commentary(title),
                 })
     except Exception:
         pass
     return results
 
 
-def fetch_headlines(max_per_feed=10, max_total=40):
+def fetch_headlines(max_per_feed=10, max_total=45):
     all_h, seen = [], set()
     for h in _fetch_rss(max_per_feed) + _fetch_gdelt():
         if h["title"] not in seen:
@@ -225,8 +247,9 @@ def format_headlines_for_prompt(headlines):
     if not headlines:
         return "No live headlines available — rely on market data context."
 
-    macro   = [h for h in headlines if not h.get("material")]
-    corp    = [h for h in headlines if h.get("material")]
+    macro      = [h for h in headlines if not h.get("material") and not h.get("strategist")]
+    strategist = [h for h in headlines if h.get("strategist")]
+    corp       = [h for h in headlines if h.get("material") and not h.get("strategist")]
 
     lines = ["=== LIVE MACRO & GEOPOLITICAL HEADLINES ===", ""]
     for i, h in enumerate(macro, 1):
@@ -234,6 +257,17 @@ def format_headlines_for_prompt(headlines):
         s = h.get("summary", "")
         if s and s != h["title"] and len(s) > 40:
             lines.append(f"    -> {s[:200]}")
+
+    if strategist:
+        lines += ["", "=== STRATEGIST & DESK COMMENTARY (use for 'Strategist commentary' section) ===", ""]
+        lines.append("INSTRUCTION: Extract named strategist quotes with specific levels/probabilities/calls.")
+        lines.append("Format: '[Name] at [Firm] [warned/argued/said] [specific quantified view].'")
+        lines.append("")
+        for i, h in enumerate(strategist, 1):
+            lines.append(f"{i:02d}. [{h['source']}] {h['title']}")
+            s = h.get("summary", "")
+            if s and s != h["title"] and len(s) > 40:
+                lines.append(f"    -> {s[:250]}")
 
     if corp:
         lines += ["", "=== MATERIAL CORPORATE NEWS (capital allocation / earnings / M&A) ===", ""]
@@ -246,9 +280,9 @@ def format_headlines_for_prompt(headlines):
     lines += [
         "",
         "INSTRUCTION: Use macro headlines for the narrative driver and causal chain.",
-        "Use material corporate headlines for Section 7 / Corporate News only.",
-        "Do NOT use any corporate story that lacks a capital allocation decision, "
-        "M&A event, earnings result, or activist involvement.",
-        "Do NOT fabricate events not present above.",
+        "Use STRATEGIST COMMENTARY headlines for the 'Strategist commentary and desk color' section.",
+        "Use MATERIAL CORPORATE headlines for 'Corporate News' only — strict materiality filter applies.",
+        "Do NOT fabricate events, probabilities, or quotes not present above.",
+        "Do NOT use any corporate story without a capital allocation decision, M&A event, earnings result, or activist involvement.",
     ]
     return "\n".join(lines)
