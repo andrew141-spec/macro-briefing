@@ -1,6 +1,6 @@
 """
 Briefing Generator — Traderverse institutional quality.
-Groq (llama-3.3-70b-versatile) + Yahoo Finance + RSS/GDELT news injection.
+Gemini 2.0 Flash (primary) + Yahoo Finance + RSS/GDELT news injection.
 Upgraded: intraday ranges, prior-close context, strategist commentary section,
           session arc narrative, sector RSI, European rates.
 """
@@ -18,17 +18,16 @@ from utils.news_fetcher import fetch_headlines, format_headlines_for_prompt
 
 ET = pytz.timezone("America/New_York")
 
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL   = "llama-3.3-70b-versatile"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 
 def get_session(now_et=None):
     if now_et is None:
         now_et = datetime.now(ET)
     hour, minute = now_et.hour, now_et.minute
-    if (hour == 8 and minute >= 40) or hour == 9:
+    if 8 <= hour <= 10 and not (hour == 8 and minute < 30):
         return "Morning"
-    elif hour == 12 or (hour == 13 and minute <= 30):
+    elif 11 <= hour <= 13:
         return "Midday"
     else:
         return "Closing"
@@ -159,9 +158,9 @@ within five years, a capital-allocation pivot away from slowing e-commerce.
 rollout across the US, Canada, and Europe over five years.
 
 What to watch into the afternoon
-• Whether WTI holds above $97 or extends toward $100 — a break above $100 re-ignites the \
-inflation-repricing that pushed front-end yields 18bps higher this morning; a reversal below \
-$95 reduces the immediate policy tightening risk and likely lifts equities.
+• WTI above $97 — a close above $100 re-ignites the inflation-repricing that pushed \
+front-end yields 18bps higher this morning; a reversal below $95 reduces the immediate \
+policy tightening risk and likely lifts equities.
 • Watch for a market shift from "inflation shock" to "growth shock": continued weakness in \
 copper (now at its biggest drop since 2018) and cyclicals alongside stable long-end yields \
 would reinforce that transition and begin to price Fed cuts rather than hikes.
@@ -204,8 +203,7 @@ Spot gold fell 3.5% to $4,651.07/oz — a notable contradiction in a risk-off se
 suggesting forced de-risking and profit-taking outweighed safe-haven demand. Crypto traded \
 softer alongside broader risk assets: Bitcoin fell 1.3% to $70,278.74 and Ether declined \
 2.0% to $2,142.87. The move in crypto was narrower than equities on a percentage basis, \
-consistent with a geopolitical relief trade rather than a clean growth re-rating — genuine \
-growth re-ratings tend to lift crypto more aggressively.
+consistent with a geopolitical relief trade rather than a clean growth re-rating.
 
 Corporate News
 • FedEx — issued a bullish outlook, a constructive read-through for cyclicals and global \
@@ -283,7 +281,10 @@ No "could lead to." No CEO quote without a capital allocation decision. \
 WHAT TO WATCH:
 2–4 bullets. Each: [Specific variable] — if [condition A + level], [mechanism] → \
 [asset] moves [direction/level]; if [condition B], [opposite]. \
-Every bullet needs a checkable level or condition.
+Every bullet needs a checkable level or condition. \
+BANNED words in this section: "could" / "might" / "may" / "would" / "remains to be seen" / \
+"will be closely watched" / "will be important" / "could impact markets" / "could signal" / \
+"could lead to" / "it could"
 
 STRATEGIST COMMENTARY (when present in headlines):
 Format: "[Name] at [Firm] [warned/argued/said] [specific quantified view]." \
@@ -465,7 +466,7 @@ Powered by Traderverse | {date_str}
 """
 
 
-def generate_briefing(groq_api_key, alpha_vantage_key="", session=None, force_session=None):
+def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", session=None, force_session=None):
     now_et   = datetime.now(ET)
     date_str = now_et.strftime("%B %d, %Y").replace(" 0", " ")
     session  = force_session or session or get_session(now_et)
@@ -492,39 +493,79 @@ def generate_briefing(groq_api_key, alpha_vantage_key="", session=None, force_se
 
     # 2. News headlines
     try:
-        headlines = fetch_headlines(max_per_feed=10, max_total=45)
+        headlines = fetch_headlines(max_per_feed=15, max_total=60)
         result["news_headlines"] = headlines
         news_str = format_headlines_for_prompt(headlines)
     except Exception as e:
         result["error"] = (result.get("error") or "") + f" | News fetch failed: {e}"
         news_str = "Live headlines unavailable — anchor analysis to market data moves."
 
-    # 3. Call Groq
-    try:
-        payload = {
-            "model": GROQ_MODEL,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "system", "content": FEW_SHOT_EXAMPLES},
-                {"role": "user",   "content": build_prompt(session, mkt_str, news_str, date_str, rsi_str)},
-            ],
-            "max_tokens": 4096,
-            "temperature": 0.2,
-            "top_p": 0.85,
-        }
-        resp = requests.post(
-            GROQ_API_URL,
-            headers={"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=90,
-        )
-        resp.raise_for_status()
-        result["briefing"] = resp.json()["choices"][0]["message"]["content"]
-    except requests.exceptions.HTTPError as e:
-        status = e.response.status_code if e.response else "?"
-        body   = e.response.text[:400] if e.response else ""
-        result["error"] = (result.get("error") or "") + f" | Groq HTTP {status}: {body}"
-    except Exception as e:
-        result["error"] = (result.get("error") or "") + f" | Groq error: {e}"
+    # 3. Build full prompt
+    full_prompt = (
+        SYSTEM_PROMPT + "\n\n"
+        + FEW_SHOT_EXAMPLES + "\n\n"
+        + build_prompt(session, mkt_str, news_str, date_str, rsi_str)
+    )
+
+    # 4. Call Gemini
+    if gemini_api_key:
+        try:
+            payload = {
+                "contents": [
+                    {"parts": [{"text": full_prompt}]}
+                ],
+                "generationConfig": {
+                    "temperature": 0.2,
+                    "topP": 0.85,
+                    "maxOutputTokens": 4096,
+                },
+            }
+            resp = requests.post(
+                f"{GEMINI_API_URL}?key={gemini_api_key}",
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                timeout=90,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            result["briefing"] = data["candidates"][0]["content"]["parts"][0]["text"]
+            return result
+        except requests.exceptions.HTTPError as e:
+            status = e.response.status_code if e.response else "?"
+            body   = e.response.text[:400] if e.response else ""
+            result["error"] = (result.get("error") or "") + f" | Gemini HTTP {status}: {body}"
+        except Exception as e:
+            result["error"] = (result.get("error") or "") + f" | Gemini error: {e}"
+
+    # 5. Fallback to Groq if Gemini fails or no key provided
+    if groq_api_key:
+        GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+        GROQ_MODEL   = "llama-3.3-70b-versatile"
+        try:
+            payload = {
+                "model": GROQ_MODEL,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": FEW_SHOT_EXAMPLES},
+                    {"role": "user",   "content": build_prompt(session, mkt_str, news_str, date_str, rsi_str)},
+                ],
+                "max_tokens": 4096,
+                "temperature": 0.2,
+                "top_p": 0.85,
+            }
+            resp = requests.post(
+                GROQ_API_URL,
+                headers={"Authorization": f"Bearer {groq_api_key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=90,
+            )
+            resp.raise_for_status()
+            result["briefing"] = resp.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.HTTPError as e:
+            status = e.response.status_code if e.response else "?"
+            body   = e.response.text[:400] if e.response else ""
+            result["error"] = (result.get("error") or "") + f" | Groq HTTP {status}: {body}"
+        except Exception as e:
+            result["error"] = (result.get("error") or "") + f" | Groq error: {e}"
 
     return result
