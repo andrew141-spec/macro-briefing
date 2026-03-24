@@ -33,10 +33,13 @@ RSS_FEEDS = [
     {"name": "Investing.com",         "url": "https://www.investing.com/rss/news.rss",                   "tier": 3},
 ]
 
+# More focused GDELT query — targets the specific themes that move markets
 GDELT_URL = (
     "https://api.gdeltproject.org/api/v2/doc/doc"
-    "?query=economy+OR+oil+OR+federal+reserve+OR+inflation+OR+china+OR+iran"
-    "&mode=artlist&maxrecords=25&timespan=6h&format=json&sourcelang=english"
+    "?query=(oil OR crude OR OPEC OR Hormuz OR energy) OR "
+    "(Federal Reserve OR inflation OR CPI OR interest rate OR yield) OR "
+    "(earnings OR guidance OR acquisition OR merger OR IPO OR buyback)"
+    "&mode=artlist&maxrecords=30&timespan=8h&format=json&sourcelang=english"
 )
 
 MACRO_KEYWORDS = [
@@ -170,7 +173,7 @@ def _priority(h):
     return 6
 
 
-def _fetch_rss(max_per_feed=10):
+def _fetch_rss(max_per_feed=15):
     results, seen = [], set()
     headers = {"User-Agent": "Mozilla/5.0 (compatible; MacroBot/1.0)"}
     sorted_feeds = sorted(RSS_FEEDS, key=lambda f: f.get("tier", 9))
@@ -217,7 +220,7 @@ def _fetch_gdelt():
         resp = requests.get(GDELT_URL, timeout=10)
         if resp.status_code != 200:
             return []
-        for art in resp.json().get("articles", [])[:20]:
+        for art in resp.json().get("articles", [])[:30]:
             title = _clean(art.get("title", ""))
             if title and _relevant(title) and not _is_noise(title):
                 results.append({
@@ -233,7 +236,7 @@ def _fetch_gdelt():
     return results
 
 
-def fetch_headlines(max_per_feed=10, max_total=45):
+def fetch_headlines(max_per_feed=15, max_total=60):
     all_h, seen = [], set()
     for h in _fetch_rss(max_per_feed) + _fetch_gdelt():
         if h["title"] not in seen:
