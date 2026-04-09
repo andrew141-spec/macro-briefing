@@ -453,11 +453,8 @@ def init_state():
         "briefings":            [],
         "current_briefing":     None,
         "last_generated":       {},
+        "last_error":           None,
         "api_key_set":          False,
-        # Tracks which session window was active when auto_check last ran.
-        # Stored as "Morning", "Midday", "Closing", or None.
-        # Resets when the active session window changes so the check re-runs,
-        # but should_auto_generate() guards against duplicate generation via archive.
         "auto_checked_session": None,
     }
     for k, v in defaults.items():
@@ -531,18 +528,27 @@ def run_generation(session_override: str = None):
         st.session_state["last_generated"] = mark_generated(
             result["session"], st.session_state["last_generated"]
         )
+        st.session_state["last_error"] = None
         st.success(f"Briefing generated via {model_label} — {result['session']} | {result['generated_at']}")
     else:
-        st.error("Generation failed")
-        st.write(f"**Prompt size:** {result.get('prompt_chars', 'unknown')} chars")
-        error_detail = result.get('error') or 'No error detail captured'
-        st.code(error_detail, language=None)
-        st.write("**Debug info:**")
-        st.write(f"- `gemini_key`: {'✅ set' if gemini_key else '❌ missing'}")
-        st.write(f"- `groq_key`: {'✅ set' if groq_key else '❌ missing'}")
-        for k, v in result.items():
-            if k not in ('briefing', 'market_data_raw', 'market_data_str', 'news_headlines'):
-                st.write(f"- `{k}`: {str(v)[:300]}")
+        st.session_state["last_error"] = {"result": result, "gemini_key": bool(gemini_key), "groq_key": bool(groq_key)}
+
+if st.session_state.get("last_error"):
+    err_data = st.session_state["last_error"]
+    result = err_data["result"]
+    st.error("Generation failed")
+    st.write(f"**Prompt size:** {result.get('prompt_chars', 'unknown')} chars")
+    error_detail = result.get('error') or 'No error detail captured'
+    parts = [p.strip() for p in error_detail.split(" | ") if p.strip()]
+    for part in parts:
+        if part:
+            st.code(part, language=None)
+    st.write("**Debug info:**")
+    st.write(f"- `gemini_key`: {'✅ set' if err_data['gemini_key'] else '❌ missing'}")
+    st.write(f"- `groq_key`: {'✅ set' if err_data['groq_key'] else '❌ missing'}")
+    for k, v in result.items():
+        if k not in ('briefing', 'market_data_raw', 'market_data_str', 'news_headlines'):
+            st.write(f"- `{k}`: {str(v)}")
 
 
 # ─── SIDEBAR ──────────────────────────────────────────────────────────────────
