@@ -538,6 +538,8 @@ def run_generation(session_override: str = None):
         error_detail = result.get('error') or 'No error detail captured'
         st.code(error_detail, language=None)
         st.write("**Debug info:**")
+        st.write(f"- `gemini_key`: {'✅ set' if gemini_key else '❌ missing'}")
+        st.write(f"- `groq_key`: {'✅ set' if groq_key else '❌ missing'}")
         for k, v in result.items():
             if k not in ('briefing', 'market_data_raw', 'market_data_str', 'news_headlines'):
                 st.write(f"- `{k}`: {str(v)[:300]}")
