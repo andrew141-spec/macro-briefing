@@ -763,10 +763,10 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
             payload = {
                 "model": GROQ_MODEL,
                 "messages": [
-                    {"role": "system", "content": SYSTEM_PROMPT + "\n\n" + FEW_SHOT_EXAMPLES},
+                    {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user",   "content": build_prompt(session, mkt_str, news_str, date_str, rsi_str)},
                 ],
-                "max_tokens": 4096,
+                "max_tokens": 3500,
                 "temperature": 0.2,
                 "top_p": 0.85,
             }
