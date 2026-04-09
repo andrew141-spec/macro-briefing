@@ -762,8 +762,7 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
             payload = {
                 "model": GROQ_MODEL,
                 "messages": [
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "system", "content": FEW_SHOT_EXAMPLES},
+                    {"role": "system", "content": SYSTEM_PROMPT + "\n\n" + FEW_SHOT_EXAMPLES},
                     {"role": "user",   "content": build_prompt(session, mkt_str, news_str, date_str, rsi_str)},
                 ],
                 "max_tokens": 4096,
@@ -778,7 +777,7 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
             )
             print(f"[GROQ] status={resp.status_code}", flush=True)
             if not resp.ok:
-                err = f"Groq HTTP {resp.status_code}: {resp.text[:600]}"
+                err = f"Groq HTTP {resp.status_code}: {resp.text[:1200]}"
                 print(f"[GROQ] {err}", flush=True)
                 result["error"] = (result.get("error") or "") + f" | {err}"
             else:
