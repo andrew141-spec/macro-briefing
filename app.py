@@ -4,6 +4,7 @@ Macro Market Briefing — Core Convexity Terminal Theme
 
 import streamlit as st
 import time
+import html
 from datetime import datetime
 import pytz
 
@@ -786,7 +787,7 @@ if briefing and briefing.get("briefing"):
     </div>""", unsafe_allow_html=True)
 
     st.markdown(
-        f'<div class="briefing-wrap">{briefing["briefing"]}</div>',
+        f'<div class="briefing-wrap">{html.escape(briefing["briefing"]).replace(chr(10), "<br>")}</div>',
         unsafe_allow_html=True
     )
 
