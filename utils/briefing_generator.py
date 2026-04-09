@@ -754,7 +754,7 @@ def generate_briefing(gemini_api_key="", groq_api_key="", alpha_vantage_key="", 
             result["error"] = (result.get("error") or "") + f" | {err}"
 
     # 5. Fallback to Groq if Gemini fails or no key provided
-    if groq_api_key:
+    if groq_api_key and not result.get("briefing"):
         GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
         GROQ_MODEL   = "llama-3.3-70b-versatile"
         try:
